@@ -1,8 +1,8 @@
 # Programa 0 - Programa de Exemplo (substitua pelo nome do seu programa e o número do seu grupo)
 ## O que faz? Para que serve?
-Inclua aqui uma breve descrição do seu programa para explicar o que esperar dele.
+Vamos usar o youtube-dl. É um programa Open Source feito em Python, que baixa e converte vídeos diretamente do youtube.
 ## Por que é bom para medir desempenho?
-Que tipo de atividade ele está medindo? Somente desempenho do processador? Desempenho do disco? Algo mais? Processador single-core, multi-core?
+Com esse software, podemos medir o desempenho da rede, processamento, disco e memória.
 ## O que baixar
 Onde pode ser baixado o código fonte dele. Não é permitido utilizar nenhum versão já instalada nos computadores.
 ## Como compilar/instalar
