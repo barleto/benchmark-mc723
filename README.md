@@ -1,8 +1,9 @@
 # Programa 0 - Programa de Exemplo (substitua pelo nome do seu programa e o número do seu grupo)
 ## O que faz? Para que serve?
+Esse benchmark analisa o desempenho da máquina ao executar downlaods e conversões do youtube, analisando rede, acesso a disco, acesso a memória, processador e cache.
 Vamos usar o youtube-dl. É um programa Open Source feito em Python, que baixa e converte vídeos diretamente do youtube.
 ## Por que é bom para medir desempenho?
-Com esse software, podemos medir o desempenho da rede, processamento, disco e memória.
+O download do arquivo permitirá um uso intensivo da rede, e a conversão permite um uso intensivo do processador, alm de ser capaz de avaliar diferentes componentens do hardware.
 ## O que baixar
 Onde pode ser baixado o código fonte dele. Não é permitido utilizar nenhum versão já instalada nos computadores.
 ## Como compilar/instalar
