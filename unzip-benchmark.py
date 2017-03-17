@@ -24,7 +24,8 @@ for result in results:
     print str(result)
 
 print "##################################"
-
+print ""
+print "Final result"
 mean = 0
 for result in results:
     mean += result
@@ -35,6 +36,7 @@ for result in results:
     stdDeviation += (result - mean)**2
 stdDeviation /= (len(results)-1)
 stdDeviation = stdDeviation**0.5
+
 
 stdError = stdDeviation/(10**0.5)
 print "mean : " + str(mean) + "s"
