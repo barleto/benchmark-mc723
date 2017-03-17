@@ -23,9 +23,9 @@ print "Time of each unzip(s)"
 for result in results:
     print str(result)
 
-print "##################################"
+print "#############RESULTS###############"
 print ""
-print "Final result"
+print "Final results:"
 mean = 0
 for result in results:
     mean += result
