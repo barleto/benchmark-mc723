@@ -19,8 +19,9 @@ for i in range(0, 10):
     endTime = time.time()
     results.append(endTime - initialTime)
 
+print "Time of each unzip(s)"
 for result in results:
-    print result
+    print str(result)
 
 print "##################################"
 
@@ -36,6 +37,6 @@ stdDeviation /= (len(results)-1)
 stdDeviation = stdDeviation**0.5
 
 stdError = stdDeviation/(10**0.5)
-print "mean : " + str(mean)
-print "standart Deviation : " + str(stdDeviation)
-print "standart error: " + str(stdError)
+print "mean : " + str(mean) + "s"
+print "standart Deviation : " + str(stdDeviation) + "s"
+print "standart error: " + str(stdError) + "s"
