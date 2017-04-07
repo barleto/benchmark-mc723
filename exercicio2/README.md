@@ -123,52 +123,52 @@ Utilizando o script chamado `create_graphs.py` que se encontra nessa mesma pasta
 - CacheSize,BlockSize X L1-d misses
 - CacheSize,Associativity X L1-d misses
 
-## Resultados:
+## Resultados
 
-### GZIP
+## GZIP
 
-** Instruction Cache **
+### Instruction Cache
 
 ![](graphs/gzip.csv.i.1.png)
 ![](graphs/gzip.csv.i.2.png)
 
-** Data Cache **
+### Data Cache
 
 ![](graphs/gzip.csv.d.1.png)
 ![](graphs/gzip.csv.d.2.png)
 
-### GCC
+## GCC
 
-** Instruction Cache **
+### Instruction Cache
 
 ![](graphs/gcc.csv.i.1.png)
 ![](graphs/gcc.csv.i.2.png)
 
-** Data Cache **
+### Data Cache
 
 ![](graphs/gcc.csv.d.1.png)
 ![](graphs/gcc.csv.d.2.png)
 
-### Lucas
+## Lucas
 
-** Instruction Cache **
+### Instruction Cache
 
 ![](graphs/lucas.csv.i.1.png)
 ![](graphs/lucas.csv.i.2.png)
 
-** Data Cache **
+### Data Cache
 
 ![](graphs/lucas.csv.d.1.png)
 ![](graphs/lucas.csv.d.2.png)
 
-### Mesa
+## Mesa
 
-** Instruction Cache **
+### Instruction Cache 
 
 ![](graphs/mesa.csv.i.1.png)
 ![](graphs/mesa.csv.i.2.png)
 
-** Data Cache **
+### Data Cache
 
 ![](graphs/mesa.csv.d.1.png)
 ![](graphs/mesa.csv.d.2.png)
