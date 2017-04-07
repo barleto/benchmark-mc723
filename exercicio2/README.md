@@ -175,4 +175,6 @@ Obs: O gráfico foi colorido para melhorar sua visualização. Vermelho: Valores
 
 ## Resultados
 Para os valores analisados, é possível perceber nos gráficos, que a quantidade de miss tende a diminuir quando todos os valores analisados aumentam, como era de se esperar.
-O block size e associatividade não diminuem o número de miss linearmente, em todos so casos. E, na teoria, valores muito grandes pra esses parâmetros
+O block size e associatividade não diminuem o número de miss linearmente, em todos so casos. E, na teoria, valores muito grandes para esses parâmetros podem comprometer a performance.
+
+Portando, a melhor configuraço é aquela com tamanho de cache maior.
