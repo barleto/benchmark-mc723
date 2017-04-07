@@ -126,37 +126,51 @@ Utilizando o script chamado `create_graphs.py` que se encontra nessa mesma pasta
 ## Resultados:
 
 ### GZIP
+
 ** Instruction Cache **
+
 ![](graphs/gzip.csv.i.1.png)
 ![](graphs/gzip.csv.i.2.png)
 
 ** Data Cache **
+
 ![](graphs/gzip.csv.d.1.png)
 ![](graphs/gzip.csv.d.2.png)
 
 ### GCC
+
 ** Instruction Cache **
+
 ![](graphs/gcc.csv.i.1.png)
 ![](graphs/gcc.csv.i.2.png)
 
 ** Data Cache **
+
 ![](graphs/gcc.csv.d.1.png)
 ![](graphs/gcc.csv.d.2.png)
 
 ### Lucas
+
 ** Instruction Cache **
+
 ![](graphs/lucas.csv.i.1.png)
 ![](graphs/lucas.csv.i.2.png)
 
 ** Data Cache **
+
 ![](graphs/lucas.csv.d.1.png)
 ![](graphs/lucas.csv.d.2.png)
 
 ### Mesa
+
 ** Instruction Cache **
+
 ![](graphs/mesa.csv.i.1.png)
 ![](graphs/mesa.csv.i.2.png)
 
 ** Data Cache **
+
 ![](graphs/mesa.csv.d.1.png)
 ![](graphs/mesa.csv.d.2.png)
+
+## Resultados
