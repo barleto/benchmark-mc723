@@ -174,3 +174,5 @@ Obs: O gráfico foi colorido para melhorar sua visualização. Vermelho: Valores
 ![](graphs/mesa.csv.d.2.png)
 
 ## Resultados
+Para os valores analisados, é possível perceber nos gráficos, que a quantidade de miss tende a diminuir quando todos os valores analisados aumentam, como era de se esperar.
+O block size e associatividade não diminuem o número de miss linearmente, em todos so casos. E, na teoria, valores muito grandes pra esses parâmetros
