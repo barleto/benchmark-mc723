@@ -124,7 +124,7 @@ Utilizando o script chamado `create_graphs.py` que se encontra nessa mesma pasta
 - CacheSize,Associativity X L1-d misses
 
 ## Resultados
-
+Obs: O gráfico foi colorido para melhorar sua visualização. Vermelho: Valores maiores de Miss; Azul: valores menores de Miss.
 ## GZIP
 
 ### Instruction Cache
