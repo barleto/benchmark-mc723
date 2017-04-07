@@ -22,7 +22,7 @@ Para a simplificação e diminuição do tempo de teste, algumas medidas foram t
     - Associativity: 4
    - O valor baixo é igual à metade do valor médio. E o valor Grande, por sua vez, é igual ao dobro do valor médio.
    
-### Como foram feitos os testes
+## Como foram feitos os testes
 Os testes foram feitos em quatro programas diferentes: `gzip`,`gcc`,`lucas` e `mesa`.
 
 Para cada prgrama, foi foram rodados 27 testes no `DineroIV`. O númeor 27 representa uma combinaço de três parâmetros(cache size, bock size e associativity) com 3 valores possíveis, cada (Pequeno, Médio e Grande). Os misses das duas caches(Instruço e dados) eram as sadas dos testes.
@@ -113,4 +113,50 @@ Um exemplo de saída:
 | 64K      | 16K        | 4     | 393       | 14339842  |
 | 128K     | 16K        | 8     | 13        | 4508819   |
 
-### Apresentação dos resultados
+Todos outros `CSV`s se encontram na pasta "csvs".
+
+## Apresentação dos resultados
+
+Utilizando o script chamado `create_graphs.py` que se encontra nessa mesma pasta nesse repositório, foi possível gerar quatro gráficos por programa testado. Os gráficos são:
+- CacheSize,BlockSize X L1-i misses
+- CacheSize,Associativity X L1-i misses
+- CacheSize,BlockSize X L1-d misses
+- CacheSize,Associativity X L1-d misses
+
+## Resultados:
+
+### GZIP
+** Instruction Cache **
+![](graphs/gzip.csv.i.1.png)
+![](graphs/gzip.csv.i.2.png)
+
+** Data Cache **
+![](graphs/gzip.csv.d.1.png)
+![](graphs/gzip.csv.d.2.png)
+
+### GCC
+** Instruction Cache **
+![](graphs/gcc.csv.i.1.png)
+![](graphs/gcc.csv.i.2.png)
+
+** Data Cache **
+![](graphs/gcc.csv.d.1.png)
+![](graphs/gcc.csv.d.2.png)
+
+### Lucas
+** Instruction Cache **
+![](graphs/lucas.csv.i.1.png)
+![](graphs/lucas.csv.i.2.png)
+
+** Data Cache **
+![](graphs/lucas.csv.d.1.png)
+![](graphs/lucas.csv.d.2.png)
+
+### Mesa
+** Instruction Cache **
+![](graphs/mesa.csv.i.1.png)
+![](graphs/mesa.csv.i.2.png)
+
+** Data Cache **
+![](graphs/mesa.csv.d.1.png)
+![](graphs/mesa.csv.d.2.png)
