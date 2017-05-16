@@ -45,6 +45,100 @@ static int processors_started = 0;
 // NOSSAS MODIFICAÇÕES AQUI!! //
 
 
+// VITOR - inicio //
+
+// Definitions and Configs:
+#define USING_FOWARDING	false
+#define IS_SUPERESCALAR	false
+
+
+typedef struct instructionInfo
+{
+	// mips_parms::mips_isa type; // tipo da instrução (0-aritmetica, 1-load)
+	int  wReg, // -1 if not using
+		r1Reg,
+		r2Reg;
+	bool valid; // indica se é uma instruçâo válida ou não
+} instructionInfo;
+// updatePipeline( { w, r1, r2, true } )
+#define NO_INSTRUC { -1, -1, -1, false }
+
+// current instructionInfo
+#define currInst  instrucs[0]
+// previous instructionInfo (behind current)
+#define prevInst  instrucs[1]
+// 2 instructionInfo behinds current
+#define prev2Inst instrucs[2]
+
+// Pipeline Instructions:
+instructionInfo instrucs[3];
+
+
+bool areValidEqualRegisters(int register1, int register2)
+{
+	if(register1 == register2 && register1 >= 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+int dataStalls = 0;
+int cycles = 0;
+
+void checkDataHazards()
+{
+	// Counter for data stalls
+	int stallCount = 0;
+
+	// Data hazard with 2 instructions of difference: +2 stalls
+	if( areValidEqualRegisters(currInst.wReg, prev2Inst.r1Reg) || areValidEqualRegisters(currInst.wReg, prev2Inst.r2Reg) // Write Afeter Read
+ 	 || areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) // Read After Write
+  	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
+	{
+		stallCount = 2;
+	}
+
+	// Data hazard with 1 instructions of difference: +1 stalls
+	if( areValidEqualRegisters(currInst.wReg, prevInst.r1Reg) || areValidEqualRegisters(currInst.wReg, prevInst.r2Reg) // Write Afeter Read
+ 	 || areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) // Read After Write
+  	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
+	{
+		stallCount = 1;
+	}
+
+	// If a stall occured when using fowarding
+	if(stallCount > 0 && USING_FOWARDING)
+	{
+		stallCount = 1;
+	}
+
+	// If a stall occured in a superescalar
+	if(stallCount > 0 && IS_SUPERESCALAR)
+	{
+		//TODO: IMPLEMENT WHAT HAPPENS WHEN A DATA HAZARD OCCURS IN A SUPERESCALAR!
+	}
+
+	// Update counters
+	dataStalls += stallCount;
+	cycles     += stallCount;
+}
+
+void updatePipeline(instructionInfo enteringInstruction)
+{
+	// Update the current instruction to the one entering right now at the pipeline
+	currInst = enteringInstruction;
+
+	// Check hazards:
+	checkDataHazards();
+
+	// Update instructions order in pipeline:
+	prev2Inst = prevInst;
+	prevInst  = currInst;
+	currInst  = NO_INSTRUC;
+}
+
+// VITOR - fim //
 
 /******************************************************************************/
 
@@ -57,6 +151,7 @@ void ac_behavior( instruction )
   ac_pc = npc;
   npc = ac_pc + 4;
 #endif
+  //printf("teste\n");
 };
 
 //! Instruction Format behavior methods.
@@ -67,6 +162,11 @@ void ac_behavior( Type_J ){}
 //!Behavior called before starting simulation
 void ac_behavior(begin)
 {
+	// Initialize instructions in pipeline (initialy empty)
+	currInst  = NO_INSTRUC;
+	prevInst  = NO_INSTRUC;
+	prev2Inst = NO_INSTRUC;
+
   dbg_printf("@@@ begin behavior @@@\n");
   RB[0] = 0;
   npc = ac_pc + 4;
@@ -84,6 +184,7 @@ void ac_behavior(begin)
 void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
+  printf("data stalls = %d\n", dataStalls);
 }
 
 
@@ -95,6 +196,7 @@ void ac_behavior( lb )
   byte = DATA_PORT->read_byte(RB[rs]+ imm);
   RB[rt] = (ac_Sword)byte ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lbu behavior method.
@@ -105,6 +207,7 @@ void ac_behavior( lbu )
   byte = DATA_PORT->read_byte(RB[rs]+ imm);
   RB[rt] = byte ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lh behavior method.
@@ -115,6 +218,7 @@ void ac_behavior( lh )
   half = DATA_PORT->read_half(RB[rs]+ imm);
   RB[rt] = (ac_Sword)half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lhu behavior method.
@@ -124,6 +228,7 @@ void ac_behavior( lhu )
   half = DATA_PORT->read_half(RB[rs]+ imm);
   RB[rt] = half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lw behavior method.
@@ -132,6 +237,7 @@ void ac_behavior( lw )
   dbg_printf("lw r%d, %d(r%d)\n", rt, imm & 0xFFFF, rs);
   RB[rt] = DATA_PORT->read(RB[rs]+ imm);
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lwl behavior method.
@@ -148,6 +254,7 @@ void ac_behavior( lwl )
   data |= RB[rt] & ((1<<offset)-1);
   RB[rt] = data;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lwr behavior method.
@@ -164,6 +271,7 @@ void ac_behavior( lwr )
   data |= RB[rt] & (0xFFFFFFFF << (32-offset));
   RB[rt] = data;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction sb behavior method.
@@ -174,6 +282,7 @@ void ac_behavior( sb )
   byte = RB[rt] & 0xFF;
   DATA_PORT->write_byte(RB[rs] + imm, byte);
   dbg_printf("Result = %#x\n", (int) byte);
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction sh behavior method.
@@ -184,6 +293,7 @@ void ac_behavior( sh )
   half = RB[rt] & 0xFFFF;
   DATA_PORT->write_half(RB[rs] + imm, half);
   dbg_printf("Result = %#x\n", (int) half);
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction sw behavior method.
@@ -192,6 +302,7 @@ void ac_behavior( sw )
   dbg_printf("sw r%d, %d(r%d)\n", rt, imm & 0xFFFF, rs);
   DATA_PORT->write(RB[rs] + imm, RB[rt]);
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction swl behavior method.
@@ -208,6 +319,7 @@ void ac_behavior( swl )
   data |= DATA_PORT->read(addr & 0xFFFFFFFC) & (0xFFFFFFFF << (32-offset));
   DATA_PORT->write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction swr behavior method.
@@ -224,6 +336,7 @@ void ac_behavior( swr )
   data |= DATA_PORT->read(addr & 0xFFFFFFFC) & ((1<<offset)-1);
   DATA_PORT->write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction addi behavior method.
@@ -237,6 +350,7 @@ void ac_behavior( addi )
        ((imm & 0x80000000) != (RB[rt] & 0x80000000)) ) {
     fprintf(stderr, "EXCEPTION(addi): integer overflow.\n"); exit(EXIT_FAILURE);
   }
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction addiu behavior method.
@@ -245,6 +359,7 @@ void ac_behavior( addiu )
   dbg_printf("addiu r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] + imm;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction slti behavior method.
@@ -258,6 +373,7 @@ void ac_behavior( slti )
   else
     RB[rt] = 0;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction sltiu behavior method.
@@ -271,6 +387,7 @@ void ac_behavior( sltiu )
   else
     RB[rt] = 0;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction andi behavior method.
@@ -279,6 +396,7 @@ void ac_behavior( andi )
   dbg_printf("andi r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] & (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction ori behavior method.
@@ -287,6 +405,7 @@ void ac_behavior( ori )
   dbg_printf("ori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] | (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction xori behavior method.
@@ -295,6 +414,7 @@ void ac_behavior( xori )
   dbg_printf("xori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] ^ (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction lui behavior method.
@@ -306,6 +426,7 @@ void ac_behavior( lui )
   // and moved to the target register ( rt )
   RB[rt] = imm << 16;
   dbg_printf("Result = %#x\n", RB[rt]);
+  updatePipeline( { rt, rs, -1, true } );
 };
 
 //!Instruction add behavior method.
@@ -319,6 +440,7 @@ void ac_behavior( add )
        ((RB[rd] & 0x80000000) != (RB[rt] & 0x80000000)) ) {
     fprintf(stderr, "EXCEPTION(add): integer overflow.\n"); exit(EXIT_FAILURE);
   }
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction addu behavior method.
@@ -329,6 +451,7 @@ void ac_behavior( addu )
   //cout << "  RS: " << (unsigned int)RB[rs] << " RT: " << (unsigned int)RB[rt] << endl;
   //cout << "  Result =  " <<  (unsigned int)RB[rd] <<endl;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction sub behavior method.
@@ -337,6 +460,7 @@ void ac_behavior( sub )
   dbg_printf("sub r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = RB[rs] - RB[rt];
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
   //TODO: test integer overflow exception for sub
 };
 
@@ -346,6 +470,7 @@ void ac_behavior( subu )
   dbg_printf("subu r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = RB[rs] - RB[rt];
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction slt behavior method.
@@ -359,6 +484,7 @@ void ac_behavior( slt )
   else
     RB[rd] = 0;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction sltu behavior method.
@@ -372,6 +498,7 @@ void ac_behavior( sltu )
   else
     RB[rd] = 0;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction instr_and behavior method.
@@ -380,6 +507,7 @@ void ac_behavior( instr_and )
   dbg_printf("instr_and r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = RB[rs] & RB[rt];
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction instr_or behavior method.
@@ -388,6 +516,7 @@ void ac_behavior( instr_or )
   dbg_printf("instr_or r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = RB[rs] | RB[rt];
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction instr_xor behavior method.
@@ -396,6 +525,7 @@ void ac_behavior( instr_xor )
   dbg_printf("instr_xor r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = RB[rs] ^ RB[rt];
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction instr_nor behavior method.
@@ -404,12 +534,14 @@ void ac_behavior( instr_nor )
   dbg_printf("nor r%d, r%d, r%d\n", rd, rs, rt);
   RB[rd] = ~(RB[rs] | RB[rt]);
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction nop behavior method.
 void ac_behavior( nop )
 {
   dbg_printf("nop\n");
+  updatePipeline( { -1, -1, -1, true } );
 };
 
 //!Instruction sll behavior method.
@@ -418,6 +550,7 @@ void ac_behavior( sll )
   dbg_printf("sll r%d, r%d, %d\n", rd, rs, shamt);
   RB[rd] = RB[rt] << shamt;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, -1, true } );
 };
 
 //!Instruction srl behavior method.
@@ -426,6 +559,7 @@ void ac_behavior( srl )
   dbg_printf("srl r%d, r%d, %d\n", rd, rs, shamt);
   RB[rd] = RB[rt] >> shamt;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, -1, true } );
 };
 
 //!Instruction sra behavior method.
@@ -434,6 +568,7 @@ void ac_behavior( sra )
   dbg_printf("sra r%d, r%d, %d\n", rd, rs, shamt);
   RB[rd] = (ac_Sword) RB[rt] >> shamt;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, -1, true } );
 };
 
 //!Instruction sllv behavior method.
@@ -442,6 +577,7 @@ void ac_behavior( sllv )
   dbg_printf("sllv r%d, r%d, r%d\n", rd, rt, rs);
   RB[rd] = RB[rt] << (RB[rs] & 0x1F);
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction srlv behavior method.
@@ -450,6 +586,7 @@ void ac_behavior( srlv )
   dbg_printf("srlv r%d, r%d, r%d\n", rd, rt, rs);
   RB[rd] = RB[rt] >> (RB[rs] & 0x1F);
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction srav behavior method.
@@ -458,6 +595,7 @@ void ac_behavior( srav )
   dbg_printf("srav r%d, r%d, r%d\n", rd, rt, rs);
   RB[rd] = (ac_Sword) RB[rt] >> (RB[rs] & 0x1F);
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, rt, rs, true } );
 };
 
 //!Instruction mult behavior method.
@@ -480,6 +618,7 @@ void ac_behavior( mult )
   hi = half_result ;
 
   dbg_printf("Result = %#llx\n", result);
+  updatePipeline( { -1, rt, rs, true } );
 };
 
 //!Instruction multu behavior method.
@@ -502,6 +641,7 @@ void ac_behavior( multu )
   hi = half_result ;
 
   dbg_printf("Result = %#llx\n", result);
+  updatePipeline( { -1, rt, rs, true } );
 };
 
 //!Instruction div behavior method.
@@ -512,6 +652,7 @@ void ac_behavior( div )
   lo = (ac_Sword) RB[rs] / (ac_Sword) RB[rt];
   // Register HI receives remainder
   hi = (ac_Sword) RB[rs] % (ac_Sword) RB[rt];
+  updatePipeline( { -1, rt, rs, true } );
 };
 
 //!Instruction divu behavior method.
@@ -522,6 +663,7 @@ void ac_behavior( divu )
   lo = RB[rs] / RB[rt];
   // Register HI receives remainder
   hi = RB[rs] % RB[rt];
+  updatePipeline( { -1, rt, rs, true } );
 };
 
 //!Instruction mfhi behavior method.
@@ -530,6 +672,7 @@ void ac_behavior( mfhi )
   dbg_printf("mfhi r%d\n", rd);
   RB[rd] = hi;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, -1, -1, true } );
 };
 
 //!Instruction mthi behavior method.
@@ -538,6 +681,7 @@ void ac_behavior( mthi )
   dbg_printf("mthi r%d\n", rs);
   hi = RB[rs];
   dbg_printf("Result = %#x\n", (unsigned int) hi);
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction mflo behavior method.
@@ -546,6 +690,7 @@ void ac_behavior( mflo )
   dbg_printf("mflo r%d\n", rd);
   RB[rd] = lo;
   dbg_printf("Result = %#x\n", RB[rd]);
+  updatePipeline( { rd, -1, -1, true } );
 };
 
 //!Instruction mtlo behavior method.
@@ -554,6 +699,7 @@ void ac_behavior( mtlo )
   dbg_printf("mtlo r%d\n", rs);
   lo = RB[rs];
   dbg_printf("Result = %#x\n", (unsigned int) lo);
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction j behavior method.
@@ -565,6 +711,7 @@ void ac_behavior( j )
   npc =  (ac_pc & 0xF0000000) | addr;
 #endif
   dbg_printf("Target = %#x\n", (ac_pc & 0xF0000000) | addr );
+  updatePipeline( { -1, -1, -1, true } );
 };
 
 //!Instruction jal behavior method.
@@ -583,6 +730,7 @@ void ac_behavior( jal )
 
   dbg_printf("Target = %#x\n", (ac_pc & 0xF0000000) | addr );
   dbg_printf("Return = %#x\n", ac_pc+4);
+  updatePipeline( { Ra, -1, -1, true } );
 };
 
 //!Instruction jr behavior method.
@@ -595,6 +743,7 @@ void ac_behavior( jr )
   npc = RB[rs], 1;
 #endif
   dbg_printf("Target = %#x\n", RB[rs]);
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction jalr behavior method.
@@ -613,6 +762,7 @@ void ac_behavior( jalr )
     rd = Ra;
   RB[rd] = ac_pc+4;
   dbg_printf("Return = %#x\n", ac_pc+4);
+  updatePipeline( { rd, rs, -1, true } );
 };
 
 //!Instruction beq behavior method.
@@ -625,6 +775,7 @@ void ac_behavior( beq )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction bne behavior method.
@@ -637,6 +788,7 @@ void ac_behavior( bne )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, rt, true } );
 };
 
 //!Instruction blez behavior method.
@@ -649,6 +801,7 @@ void ac_behavior( blez )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction bgtz behavior method.
@@ -661,6 +814,7 @@ void ac_behavior( bgtz )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction bltz behavior method.
@@ -673,6 +827,7 @@ void ac_behavior( bltz )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction bgez behavior method.
@@ -685,6 +840,7 @@ void ac_behavior( bgez )
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
+  updatePipeline( { -1, rs, -1, true } );
 };
 
 //!Instruction bltzal behavior method.
@@ -699,6 +855,7 @@ void ac_behavior( bltzal )
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
+  updatePipeline( { Ra, rs, -1, true } );
 };
 
 //!Instruction bgezal behavior method.
@@ -713,6 +870,7 @@ void ac_behavior( bgezal )
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
+  updatePipeline( { Ra, rs, -1, true } );
 };
 
 //!Instruction sys_call behavior method.
@@ -720,6 +878,7 @@ void ac_behavior( sys_call )
 {
   dbg_printf("syscall\n");
   stop();
+  updatePipeline( { -1, -1, -1, true } );
 }
 
 //!Instruction instr_break behavior method.
@@ -727,4 +886,5 @@ void ac_behavior( instr_break )
 {
   fprintf(stderr, "instr_break behavior not implemented.\n");
   exit(EXIT_FAILURE);
+  updatePipeline( { -1, -1, -1, true } );
 }
