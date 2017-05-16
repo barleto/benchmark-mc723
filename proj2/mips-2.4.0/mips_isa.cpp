@@ -100,6 +100,7 @@ void ac_behavior( instruction )
 #endif
 //our modifications
   instructionCount++;
+  cycles++;
   if ( generateTraces){
 		fprintf(traceFile, "%d %x\n", 2, (int)ac_pc);
   }
@@ -149,6 +150,7 @@ void ac_behavior(end)
   }else{
     printf("Not active - branch is predicted as always not taken\n");
   }
+  printf("BranchStalls: %d (%.1f\%)\n", jumpStalls,(float)jumpStalls/(float)cycles * 100);
   printf("Cicles: %d\n",cycles);
 }
 
