@@ -2,6 +2,18 @@
 ### Grupo 14
 - Ricardo Z Charf 151238
 - Vitor Marge Eichenberger 149053
+- Guilherme **PREENCHER DADOS DO GUILHEREME AQUI!!**
+
+## TODO:
+Esta seção serve somente para o grupo se orientar e **deverá ser apagada** antes da submissão final do projeto.
+
+- [ ] Escolher configurações das simulações
+- [ ] Atualizar arquivos das simulações
+	- [ ] Arquivos de trace
+	- [ ] Arquivo do mips **.cpp**
+- [ ] Compilar tudo
+- [ ] Rodar testes
+- [ ] Redigir relatório
 
 ## Roteiro
 
