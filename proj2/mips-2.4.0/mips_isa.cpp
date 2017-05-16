@@ -20,6 +20,7 @@
  *
  */
 
+#include <string>
 #include  "mips_isa.H"
 #include  "mips_isa_init.cpp"
 #include  "mips_bhv_macros.H"
@@ -44,6 +45,9 @@ static int processors_started = 0;
 // NOSSAS MODIFICAÇÕES AQUI!! //
 
 // Ricardo - incio
+bool generateTraces = true;//generate traces for later use in DineroIV
+FILE * traceFile;
+string programName = "Hello";
 int instructionCount = 0;
 int cycles = 0; //contador de ciclos
 // Branch predictor variables
@@ -94,8 +98,22 @@ void ac_behavior( instruction )
   ac_pc = npc;
   npc = ac_pc + 4;
 #endif
+//our modifications
   instructionCount++;
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 2, (int)ac_pc);
+  }
 };
+
+void OpenFileForDineroTraces(){
+  string traceFileName = "./traceOut_"+programName+".din";
+  traceFile = fopen (traceFileName.c_str(),"w");
+  if(!traceFile){
+    printf("Erro ao abrir arquivo de traces\n");
+  }else{
+    printf("Arquivo de traces aberto.\n");
+  }
+}
 
 //! Instruction Format behavior methods.
 void ac_behavior( Type_R ){}
@@ -116,6 +134,8 @@ void ac_behavior(begin)
   lo = 0;
 
   RB[29] =  AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE;
+
+  OpenFileForDineroTraces();
 }
 
 //!Behavior called after finishing simulation
@@ -141,6 +161,9 @@ void ac_behavior( lb )
   byte = DATA_PORT->read_byte(RB[rs]+ imm);
   RB[rt] = (ac_Sword)byte ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, (RB[rs] + imm));
+  }
 };
 
 //!Instruction lbu behavior method.
@@ -151,6 +174,9 @@ void ac_behavior( lbu )
   byte = DATA_PORT->read_byte(RB[rs]+ imm);
   RB[rt] = byte ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, (RB[rs] + imm));
+  }
 };
 
 //!Instruction lh behavior method.
@@ -161,6 +187,9 @@ void ac_behavior( lh )
   half = DATA_PORT->read_half(RB[rs]+ imm);
   RB[rt] = (ac_Sword)half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, (RB[rs] + imm));
+  }
 };
 
 //!Instruction lhu behavior method.
@@ -170,6 +199,9 @@ void ac_behavior( lhu )
   half = DATA_PORT->read_half(RB[rs]+ imm);
   RB[rt] = half ;
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, (RB[rs] + imm));
+  }
 };
 
 //!Instruction lw behavior method.
@@ -178,6 +210,9 @@ void ac_behavior( lw )
   dbg_printf("lw r%d, %d(r%d)\n", rt, imm & 0xFFFF, rs);
   RB[rt] = DATA_PORT->read(RB[rs]+ imm);
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, (RB[rs] + imm));
+  }
 };
 
 //!Instruction lwl behavior method.
@@ -193,7 +228,10 @@ void ac_behavior( lwl )
   data <<= offset;
   data |= RB[rt] & ((1<<offset)-1);
   RB[rt] = data;
-  dbg_printf("Result = %#x\n", RB[rt]);
+  dbg_printf("Result = %#x\n{", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, addr & 0xFFFFFFFC);
+  }
 };
 
 //!Instruction lwr behavior method.
@@ -210,6 +248,9 @@ void ac_behavior( lwr )
   data |= RB[rt] & (0xFFFFFFFF << (32-offset));
   RB[rt] = data;
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 0, addr & 0xFFFFFFFC);
+  }
 };
 
 //!Instruction sb behavior method.
@@ -220,6 +261,9 @@ void ac_behavior( sb )
   byte = RB[rt] & 0xFF;
   DATA_PORT->write_byte(RB[rs] + imm, byte);
   dbg_printf("Result = %#x\n", (int) byte);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 1, RB[rs] + imm);
+  }
 };
 
 //!Instruction sh behavior method.
@@ -230,6 +274,9 @@ void ac_behavior( sh )
   half = RB[rt] & 0xFFFF;
   DATA_PORT->write_half(RB[rs] + imm, half);
   dbg_printf("Result = %#x\n", (int) half);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 1, RB[rs] + imm);
+  }
 };
 
 //!Instruction sw behavior method.
@@ -238,6 +285,9 @@ void ac_behavior( sw )
   dbg_printf("sw r%d, %d(r%d)\n", rt, imm & 0xFFFF, rs);
   DATA_PORT->write(RB[rs] + imm, RB[rt]);
   dbg_printf("Result = %#x\n", RB[rt]);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 1, RB[rs] + imm);
+  }
 };
 
 //!Instruction swl behavior method.
@@ -254,6 +304,9 @@ void ac_behavior( swl )
   data |= DATA_PORT->read(addr & 0xFFFFFFFC) & (0xFFFFFFFF << (32-offset));
   DATA_PORT->write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 1, addr & 0xFFFFFFFC);
+  }
 };
 
 //!Instruction swr behavior method.
@@ -270,6 +323,9 @@ void ac_behavior( swr )
   data |= DATA_PORT->read(addr & 0xFFFFFFFC) & ((1<<offset)-1);
   DATA_PORT->write(addr & 0xFFFFFFFC, data);
   dbg_printf("Result = %#x\n", data);
+  if ( generateTraces){
+		fprintf(traceFile, "%d %x\n", 1, addr & 0xFFFFFFFC);
+  }
 };
 
 //!Instruction addi behavior method.
