@@ -67,10 +67,11 @@ void branchPredictionNotActive(bool isBranchTaken){
 
 void branchPredictionUpdate(bool isBranchTaken){
   if(!isPredictorActive){
-    branchPredictionNotActive(isBranchTaken)
+    branchPredictionNotActive(isBranchTaken);
     return;
   }
-  bool predictorGuessedCorrect = ((isBranchTaken && branchPredictorState == TAKEN) || (!isBranchTaken && branchPredictorState == NOT_TAKEN) //GUESSED CORRECT
+  bool predictorGuessedCorrect = (isBranchTaken && branchPredictorState == TAKEN)
+                              || (!isBranchTaken && branchPredictorState == NOT_TAKEN); //GUESSED CORRECT
   if(predictorGuessedCorrect){
     branchedCorrect++;
   }else{
@@ -673,7 +674,6 @@ void ac_behavior( beq )
   }else{
     branchPredictionUpdate(false);
   }
-
 };
 
 //!Instruction bne behavior method.
@@ -685,9 +685,9 @@ void ac_behavior( bne )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
 };
 
@@ -700,9 +700,9 @@ void ac_behavior( blez )
     npc = ac_pc + (imm<<2), 1;
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
 };
 
@@ -715,9 +715,9 @@ void ac_behavior( bgtz )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
 };
 
@@ -730,9 +730,9 @@ void ac_behavior( bltz )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
 };
 
@@ -745,9 +745,9 @@ void ac_behavior( bgez )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
 };
 
@@ -761,9 +761,9 @@ void ac_behavior( bltzal )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
@@ -778,9 +778,9 @@ void ac_behavior( bgezal )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-    ranchPredictionUpdate(true);
+    branchPredictionUpdate(true);
   }else{
-    ranchPredictionUpdate(false);
+    branchPredictionUpdate(false);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
