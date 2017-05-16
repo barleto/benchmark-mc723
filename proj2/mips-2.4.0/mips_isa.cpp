@@ -52,7 +52,7 @@ int instructionCount = 0;
 int cycles = 0; //contador de ciclos
 // Branch predictor variables
 int jumpStalls = 0;
-bool isPredictorActive = false;
+bool isPredictorActive = true;
 enum BP_STATES{TAKEN,NOT_TAKEN};
 BP_STATES branchPredictorState = NOT_TAKEN;
 int branchedCorrect = 0;
@@ -150,7 +150,7 @@ void ac_behavior(end)
   }else{
     printf("Not active - branch is predicted as always not taken\n");
   }
-  printf("BranchStalls: %d (%.1f\%)\n", jumpStalls,(float)jumpStalls/(float)cycles * 100);
+  printf("BranchStalls: %d (%.1f%c of all cycles)\n", jumpStalls,(float)jumpStalls/(float)cycles * 100,'%');
   printf("Cicles: %d\n",cycles);
 }
 
