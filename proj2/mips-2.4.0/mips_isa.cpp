@@ -48,7 +48,7 @@ static int processors_started = 0;
 // VITOR - inicio //
 
 // Definitions and Configs:
-#define USING_FOWARDING	false
+#define USING_FOWARDING	true
 #define IS_SUPERESCALAR	false
 
 
@@ -83,6 +83,7 @@ bool areValidEqualRegisters(int register1, int register2)
 	return false;
 }
 
+int dataHazard = 0;
 int dataStalls = 0;
 int cycles = 0;
 
@@ -97,6 +98,8 @@ void checkDataHazards()
   	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
 	{
 		stallCount = 2;
+		dataHazard++;
+		printf("* DATA HAZARD #%d +2 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
 	}
 
 	// Data hazard with 1 instructions of difference: +1 stalls
@@ -105,6 +108,8 @@ void checkDataHazards()
   	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
 	{
 		stallCount = 1;
+		dataHazard++;
+		printf("* DATA HAZARD #%d +1 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
 	}
 
 	// If a stall occured when using fowarding
@@ -145,13 +150,14 @@ void updatePipeline(instructionInfo enteringInstruction)
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-   dbg_printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
   //  dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
   npc = ac_pc + 4;
 #endif
   //printf("teste\n");
+  cycles++;
 };
 
 //! Instruction Format behavior methods.
@@ -184,7 +190,7 @@ void ac_behavior(begin)
 void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
-  printf("data stalls = %d\n", dataStalls);
+  printf("data stalls = %d (%g\%)\ndata hazards = %d\ncycles = %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100), dataHazard, cycles);
 }
 
 
