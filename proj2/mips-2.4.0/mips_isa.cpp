@@ -40,11 +40,47 @@ using namespace mips_parms;
 
 static int processors_started = 0;
 #define DEFAULT_STACK_SIZE (256*1024)
-
 /******************************************************************************/
 // NOSSAS MODIFICAÇÕES AQUI!! //
 
+// Ricardo - incio
+int instructionCount = 0;
+int cycles = 0; //contador de ciclos
+// Branch predictor variables
+int jumpStalls = 0;
+bool isPredictorActive = false;
+enum BP_STATES{TAKEN,NOT_TAKEN};
+BP_STATES branchPredictorState = NOT_TAKEN;
+int branchedCorrect = 0;
+int branchedIncorrect = 0;
 
+//If branch predictor is not active is the same as always NOT branching
+void branchPredictionNotActive(bool isBranchTaken){
+  if(!isBranchTaken){
+    branchedCorrect++;
+  }else{
+    branchedIncorrect++;
+    cycles+=3;
+    jumpStalls+=3;
+  }
+}
+
+void branchPredictionUpdate(bool isBranchTaken){
+  if(!isPredictorActive){
+    branchPredictionNotActive(isBranchTaken)
+    return;
+  }
+  bool predictorGuessedCorrect = ((isBranchTaken && branchPredictorState == TAKEN) || (!isBranchTaken && branchPredictorState == NOT_TAKEN) //GUESSED CORRECT
+  if(predictorGuessedCorrect){
+    branchedCorrect++;
+  }else{
+    branchedIncorrect++;
+    cycles+=3;
+    jumpStalls+=3;
+  }
+  branchPredictorState = isBranchTaken? TAKEN : NOT_TAKEN;
+}
+// Ricardo - final
 
 /******************************************************************************/
 
@@ -57,6 +93,7 @@ void ac_behavior( instruction )
   ac_pc = npc;
   npc = ac_pc + 4;
 #endif
+  instructionCount++;
 };
 
 //! Instruction Format behavior methods.
@@ -84,6 +121,14 @@ void ac_behavior(begin)
 void ac_behavior(end)
 {
   dbg_printf("@@@ end behavior @@@\n");
+  printf("##### Relatório final: #####\n");
+  printf("Branch predictor = ");
+  if(isPredictorActive){
+    printf("1 bit branch predictor\n");
+  }else{
+    printf("Not active - branch is predicted as always not taken\n");
+  }
+  printf("Cicles: %d\n",cycles);
 }
 
 
@@ -624,7 +669,11 @@ void ac_behavior( beq )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    branchPredictionUpdate(true);
+  }else{
+    branchPredictionUpdate(false);
   }
+
 };
 
 //!Instruction bne behavior method.
@@ -636,6 +685,9 @@ void ac_behavior( bne )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
 };
 
@@ -648,6 +700,9 @@ void ac_behavior( blez )
     npc = ac_pc + (imm<<2), 1;
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
 };
 
@@ -660,6 +715,9 @@ void ac_behavior( bgtz )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
 };
 
@@ -672,6 +730,9 @@ void ac_behavior( bltz )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
 };
 
@@ -684,6 +745,9 @@ void ac_behavior( bgez )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
 };
 
@@ -697,6 +761,9 @@ void ac_behavior( bltzal )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
@@ -711,6 +778,9 @@ void ac_behavior( bgezal )
     npc = ac_pc + (imm<<2);
 #endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
+    ranchPredictionUpdate(true);
+  }else{
+    ranchPredictionUpdate(false);
   }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
