@@ -13,9 +13,9 @@
  *
  * @version   1.0
  * @date      Mon, 19 Jun 2006 15:50:52 -0300
- * 
+ *
  * @brief     The ArchC i8051 functional model.
- * 
+ *
  * @attention Copyright (C) 2002-2006 --- The ArchC Team
  *
  */
@@ -41,22 +41,29 @@ using namespace mips_parms;
 static int processors_started = 0;
 #define DEFAULT_STACK_SIZE (256*1024)
 
+/******************************************************************************/
+// NOSSAS MODIFICAÇÕES AQUI!! //
+
+
+
+/******************************************************************************/
+
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
-{ 
+{
    dbg_printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
   //  dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
   npc = ac_pc + 4;
-#endif 
+#endif
 };
- 
+
 //! Instruction Format behavior methods.
 void ac_behavior( Type_R ){}
 void ac_behavior( Type_I ){}
 void ac_behavior( Type_J ){}
- 
+
 //!Behavior called before starting simulation
 void ac_behavior(begin)
 {
@@ -268,7 +275,7 @@ void ac_behavior( sltiu )
 
 //!Instruction andi behavior method.
 void ac_behavior( andi )
-{	
+{
   dbg_printf("andi r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] & (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -276,7 +283,7 @@ void ac_behavior( andi )
 
 //!Instruction ori behavior method.
 void ac_behavior( ori )
-{	
+{
   dbg_printf("ori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] | (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -284,7 +291,7 @@ void ac_behavior( ori )
 
 //!Instruction xori behavior method.
 void ac_behavior( xori )
-{	
+{
   dbg_printf("xori r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   RB[rt] = RB[rs] ^ (imm & 0xFFFF) ;
   dbg_printf("Result = %#x\n", RB[rt]);
@@ -292,7 +299,7 @@ void ac_behavior( xori )
 
 //!Instruction lui behavior method.
 void ac_behavior( lui )
-{	
+{
   dbg_printf("lui r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   // Load a constant in the upper 16 bits of a register
   // To achieve the desired behaviour, the constant was shifted 16 bits left
@@ -343,7 +350,7 @@ void ac_behavior( subu )
 
 //!Instruction slt behavior method.
 void ac_behavior( slt )
-{	
+{
   dbg_printf("slt r%d, r%d, r%d\n", rd, rs, rt);
   // Set the RD if RS< RT
   if( (ac_Sword) RB[rs] < (ac_Sword) RB[rt] )
@@ -401,13 +408,13 @@ void ac_behavior( instr_nor )
 
 //!Instruction nop behavior method.
 void ac_behavior( nop )
-{  
+{
   dbg_printf("nop\n");
 };
 
 //!Instruction sll behavior method.
 void ac_behavior( sll )
-{  
+{
   dbg_printf("sll r%d, r%d, %d\n", rd, rs, shamt);
   RB[rd] = RB[rt] << shamt;
   dbg_printf("Result = %#x\n", RB[rd]);
@@ -556,7 +563,7 @@ void ac_behavior( j )
   addr = addr << 2;
 #ifndef NO_NEED_PC_UPDATE
   npc =  (ac_pc & 0xF0000000) | addr;
-#endif 
+#endif
   dbg_printf("Target = %#x\n", (ac_pc & 0xF0000000) | addr );
 };
 
@@ -568,12 +575,12 @@ void ac_behavior( jal )
   // jump to the address given by PC(31...28)||(addr<<2)
   // It must also flush the instructions that were loaded into the pipeline
   RB[Ra] = ac_pc+4; //ac_pc is pc+4, we need pc+8
-	
+
   addr = addr << 2;
 #ifndef NO_NEED_PC_UPDATE
   npc = (ac_pc & 0xF0000000) | addr;
-#endif 
-	
+#endif
+
   dbg_printf("Target = %#x\n", (ac_pc & 0xF0000000) | addr );
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
@@ -586,7 +593,7 @@ void ac_behavior( jr )
   // It must also flush the instructions that were loaded into the pipeline
 #ifndef NO_NEED_PC_UPDATE
   npc = RB[rs], 1;
-#endif 
+#endif
   dbg_printf("Target = %#x\n", RB[rs]);
 };
 
@@ -599,7 +606,7 @@ void ac_behavior( jalr )
 
 #ifndef NO_NEED_PC_UPDATE
   npc = RB[rs], 1;
-#endif 
+#endif
   dbg_printf("Target = %#x\n", RB[rs]);
 
   if( rd == 0 )  //If rd is not defined use default
@@ -615,21 +622,21 @@ void ac_behavior( beq )
   if( RB[rs] == RB[rt] ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bne behavior method.
 void ac_behavior( bne )
-{	
+{
   dbg_printf("bne r%d, r%d, %d\n", rt, rs, imm & 0xFFFF);
   if( RB[rs] != RB[rt] ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction blez behavior method.
@@ -639,9 +646,9 @@ void ac_behavior( blez )
   if( (RB[rs] == 0 ) || (RB[rs]&0x80000000 ) ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2), 1;
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bgtz behavior method.
@@ -651,9 +658,9 @@ void ac_behavior( bgtz )
   if( !(RB[rs] & 0x80000000) && (RB[rs]!=0) ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bltz behavior method.
@@ -663,9 +670,9 @@ void ac_behavior( bltz )
   if( RB[rs] & 0x80000000 ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bgez behavior method.
@@ -675,9 +682,9 @@ void ac_behavior( bgez )
   if( !(RB[rs] & 0x80000000) ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
 };
 
 //!Instruction bltzal behavior method.
@@ -688,9 +695,9 @@ void ac_behavior( bltzal )
   if( RB[rs] & 0x80000000 ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
 
@@ -702,9 +709,9 @@ void ac_behavior( bgezal )
   if( !(RB[rs] & 0x80000000) ){
 #ifndef NO_NEED_PC_UPDATE
     npc = ac_pc + (imm<<2);
-#endif 
+#endif
     dbg_printf("Taken to %#x\n", ac_pc + (imm<<2));
-  }	
+  }
   dbg_printf("Return = %#x\n", ac_pc+4);
 };
 
@@ -718,6 +725,6 @@ void ac_behavior( sys_call )
 //!Instruction instr_break behavior method.
 void ac_behavior( instr_break )
 {
-  fprintf(stderr, "instr_break behavior not implemented.\n"); 
+  fprintf(stderr, "instr_break behavior not implemented.\n");
   exit(EXIT_FAILURE);
 }
