@@ -48,9 +48,10 @@ static int processors_started = 0;
 // VITOR - inicio //
 
 // Definitions and Configs:
-#define USING_FOWARDING	true
+#define USING_FOWARDING	false
 #define IS_SUPERESCALAR	false
 
+enum instructionType { LOAD, WRITE, OTHER };
 
 typedef struct instructionInfo
 {
@@ -92,36 +93,42 @@ void checkDataHazards()
 	// Counter for data stalls
 	int stallCount = 0;
 
-	// Data hazard with 2 instructions of difference: +2 stalls
-	if( areValidEqualRegisters(currInst.wReg, prev2Inst.r1Reg) || areValidEqualRegisters(currInst.wReg, prev2Inst.r2Reg) // Write Afeter Read
- 	 || areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) // Read After Write
-  	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
+	// RAW Data hazard with 1 instructions of difference: +1 stall
+	if( areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) )
 	{
 		stallCount = 2;
 		dataHazard++;
 		printf("* DATA HAZARD #%d +2 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
 	}
-
-	// Data hazard with 1 instructions of difference: +1 stalls
-	if( areValidEqualRegisters(currInst.wReg, prevInst.r1Reg) || areValidEqualRegisters(currInst.wReg, prevInst.r2Reg) // Write Afeter Read
- 	 || areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) // Read After Write
-  	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
+	// RAW Data hazard with 2 instructions of difference: +2 stalls
+	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
 	{
 		stallCount = 1;
 		dataHazard++;
 		printf("* DATA HAZARD #%d +1 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
 	}
 
-	// If a stall occured when using fowarding
-	if(stallCount > 0 && USING_FOWARDING)
+	//TODO: SUPERSCALAR STALLS
+	if(IS_SUPERESCALAR)
 	{
-		stallCount = 1;
+		// WAR and WAW Data hazard with 1 instructions of difference: +1 stalls
+		if( areValidEqualRegisters(currInst.wReg, prevInst.r1Reg) || areValidEqualRegisters(currInst.wReg, prevInst.r2Reg) // Write Afeter Read
+	  	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
+		{
+			//TODO: CODE HERE
+		}
+		// WAR and WAW Data hazard with 2 instructions of difference: +2 stalls
+		if( areValidEqualRegisters(currInst.wReg, prev2Inst.r1Reg) || areValidEqualRegisters(currInst.wReg, prev2Inst.r2Reg) // Write Afeter Read
+	  	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
+		{
+			//TODO: CODE HERE
+		}
 	}
 
-	// If a stall occured in a superescalar
-	if(stallCount > 0 && IS_SUPERESCALAR)
+	// If a data hazard occured when using fowarding
+	if(stallCount > 0 && USING_FOWARDING && !IS_SUPERESCALAR)
 	{
-		//TODO: IMPLEMENT WHAT HAPPENS WHEN A DATA HAZARD OCCURS IN A SUPERESCALAR!
+		stallCount = 0;
 	}
 
 	// Update counters
