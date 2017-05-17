@@ -51,7 +51,7 @@ string programName = "Hello";
 int instructionCount = 0;
 int cycles = 0; //contador de ciclos
 // Branch predictor variables
-int jumpStalls = 0;
+int branchStalls = 0;
 bool isPredictorActive = true;
 enum BP_STATES{TAKEN,NOT_TAKEN};
 BP_STATES branchPredictorState = NOT_TAKEN;
@@ -65,10 +65,9 @@ void branchPredictionNotActive(bool isBranchTaken){
   }else{
     branchedIncorrect++;
     cycles+=3;
-    jumpStalls+=3;
+    branchStalls+=3;
   }
 }
-
 
 void branchPredictionUpdate(bool isBranchTaken){
   if(!isPredictorActive){
@@ -82,7 +81,7 @@ void branchPredictionUpdate(bool isBranchTaken){
   }else{
     branchedIncorrect++;
     cycles+=3;
-    jumpStalls+=3;
+    branchStalls+=3;
   }
   branchPredictorState = isBranchTaken? TAKEN : NOT_TAKEN;
 }
@@ -264,7 +263,7 @@ void ac_behavior(end)
   }else{
     printf("Not active - branch is predicted as always not taken\n");
   }
-  printf("BranchStalls: %d (%.1f%c of all cycles)\n", jumpStalls,(float)jumpStalls/(float)cycles * 100,'%');
+  printf("BranchStalls: %d (%.1f%c of all cycles)\n", branchStalls,(float)branchStalls/(float)cycles * 100,'%');
   printf("data stalls = %d (%g\%)\ndata hazards = %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100), dataHazard);
   printf("Cicles: %d\n",cycles);
 }
