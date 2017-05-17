@@ -89,10 +89,6 @@ void branchPredictionUpdate(bool isBranchTaken){
 
 // VITOR - inicio //
 
-// Definitions and Configs:
-#define USING_FOWARDING	false
-#define IS_SUPERESCALAR	false
-
 enum instructionType { LOAD, WRITE, OTHER };
 
 typedef struct instructionInfo
