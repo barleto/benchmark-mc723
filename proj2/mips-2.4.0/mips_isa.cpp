@@ -24,6 +24,7 @@
 #include  "mips_isa.H"
 #include  "mips_isa_init.cpp"
 #include  "mips_bhv_macros.H"
+#include "configMIPS.h"
 
 
 //If you want debug information for this model, uncomment next line
@@ -45,14 +46,13 @@ static int processors_started = 0;
 // NOSSAS MODIFICAÇÕES AQUI!! //
 
 // Ricardo - incio
-bool generateTraces = true;//generate traces for later use in DineroIV
 FILE * traceFile;
-string programName = "Hello";
+
 int instructionCount = 0;
 int cycles = 0; //contador de ciclos
 // Branch predictor variables
 int branchStalls = 0;
-bool isPredictorActive = true;
+
 enum BP_STATES{TAKEN,NOT_TAKEN};
 BP_STATES branchPredictorState = NOT_TAKEN;
 int branchedCorrect = 0;
@@ -139,15 +139,13 @@ void checkDataHazards()
 	{
 		stallCount = 2;
 		dataHazard++;
-		printf("* DATA HAZARD #%d +2 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
 	}
 	// RAW Data hazard with 2 instructions of difference: +2 stalls
 	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
 	{
 		stallCount = 1;
 		dataHazard++;
-		printf("* DATA HAZARD #%d +1 stalls (total %d) at (%d)\n", dataHazard, dataStalls, cycles);
-	}
+  }
 
 	//TODO: SUPERSCALAR STALLS
 	if(IS_SUPERESCALAR)
