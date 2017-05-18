@@ -198,9 +198,10 @@ void checkDataHazards()
 	if(IS_SUPERESCALAR)
 	{
     // RAW Data hazard
-    stallCount += RawDataHazardSuperScalar();
-    if(stallCount > 0){dataHazard++;}
-
+    if(!USING_FOWARDING){
+      stallCount += RawDataHazardSuperScalar();
+      if(stallCount > 0){dataHazard++;printf("RAW\n");}
+    }
 		// WAW Data Hazard
     if(history2.size() == pipeLineSize){
       instructionInfo Instr1 = history1[0];
@@ -208,20 +209,16 @@ void checkDataHazards()
       if(areValidEqualRegisters(Instr1.wReg, Instr2.wReg)){
         dataHazard++;
         stallCount++;
-        cycles++;
+        printf("WAW\n");
       }
     }
 	}else{
     // RAW Data hazard
-  	stallCount += RawDataHazard();
+    if(USING_FOWARDING){
+  	   stallCount += RawDataHazard();
+    }
     if(stallCount > 0){dataHazard++;}
   }
-
-	// If a data hazard occured when using fowarding
-	if(stallCount > 0 && USING_FOWARDING && !IS_SUPERESCALAR)
-	{
-		stallCount = 0;
-	}
 
 	// Update counters
 	dataStalls += stallCount;
@@ -268,7 +265,7 @@ void updatePipeline(instructionInfo enteringInstruction)
   		// (pointers) to constants of same value becoming differents objects
   		instructionInfo *tmp = new instructionInfo (enteringInstruction);
   		// Add new instruction to the pipeline
-  		history2.insert(history1.begin(), *tmp);
+  		history2.insert(history2.begin(), *tmp);
   		if(history2.size() > pipeLineSize) {
   			// Remove the last instruction
   			history2.pop_back();
@@ -285,7 +282,7 @@ void updatePipeline(instructionInfo enteringInstruction)
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-   //printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
    dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
@@ -376,7 +373,8 @@ void ac_behavior(end)
   printf("Data stalls: %d (%.1f%c of all cycles)\nData hazards: %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100),'%', dataHazard);
   printf("Total cycle count: ");
   if(IS_SUPERESCALAR){
-    printf("%d\n",(cycles-dataStalls-branchStalls)/2+dataStalls+branchStalls);
+    printf("%d ",(cycles-dataStalls-branchStalls)/2+dataStalls+branchStalls);
+    printf("(Cycles: %d + DataStall: %d + BranchStall: %d)\n",(cycles-dataStalls-branchStalls)/2,dataStalls,branchStalls);
   }else{
     printf("%d\n",cycles);
   }

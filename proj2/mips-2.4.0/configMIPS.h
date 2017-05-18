@@ -8,7 +8,7 @@ bool generateTraces = true;//generate traces for later use in DineroIV
 #define USING_FOWARDING	false
 
 //Superscalar config
-#define IS_SUPERESCALAR	true
+#define IS_SUPERESCALAR	false
 
 //Control Hazard config
 bool isPredictorActive = true;
