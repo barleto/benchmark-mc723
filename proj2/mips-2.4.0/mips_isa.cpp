@@ -87,13 +87,18 @@ void branchPredictionUpdate(bool isBranchTaken){
 
 enum instructionType { LOAD, WRITE, OTHER };
 
+// Struct used for save instructions information
 typedef struct instructionInfo
 {
-	int  wReg, // -1 if not using
+	// Registers: 1 for writing, 2 for reading (negatives values mean not using)
+	int  wReg,
 		r1Reg,
 		r2Reg;
-	bool valid; // indica se é uma instruçâo válida ou não
+	// Indicates if it's a valid instrucion or a bubble/stall
+	bool valid;
 } instructionInfo;
+
+// Empty instruction:
 #define NO_INSTRUC { -1, -1, -1, false }
 
 // Pipeline Instructions Hystory:
@@ -132,8 +137,8 @@ void checkDataHazards()
 	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
 	{
 		stallCount = 1;
-  }
-  if(stallCount > 0){dataHazard++;}
+  	}
+	if(stallCount > 0) { dataHazard++; }
 
 	//TODO: SUPERSCALAR STALLS
 	if(IS_SUPERESCALAR)
