@@ -129,29 +129,29 @@ void checkDataHazards()
 	// Counter for data stalls
 	int stallCount = 0;
 	// RAW Data hazard with 1 instructions of difference: +1 stall
-	if( areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) )
+	if( areValidEqualRegisters(history1[0].r1Reg, history1[1].wReg) || areValidEqualRegisters(history1[0].r2Reg, history1[1].wReg) )
 	{
 		stallCount = 2;
 	}
 	// RAW Data hazard with 2 instructions of difference: +2 stalls
-	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
+	if( areValidEqualRegisters(history1[0].r1Reg, history1[2].wReg) || areValidEqualRegisters(history1[0].r2Reg, history1[2].wReg) )
 	{
 		stallCount = 1;
   	}
-	if(stallCount > 0) { dataHazard++; }
+	if(stallCount > 0) { dataHazard++; /*printf("hazard!\n");*/ }
 
 	//TODO: SUPERSCALAR STALLS
 	if(IS_SUPERESCALAR)
 	{
 		// WAR and WAW Data hazard with 1 instructions of difference: +1 stalls
-		if( areValidEqualRegisters(currInst.wReg, prevInst.r1Reg) || areValidEqualRegisters(currInst.wReg, prevInst.r2Reg) // Write Afeter Read
-	  	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
+		if( areValidEqualRegisters(history1[0].wReg, history1[1].r1Reg) || areValidEqualRegisters(history1[0].wReg, history1[1].r2Reg) // Write Afeter Read
+	  	 || areValidEqualRegisters(history1[0].wReg, history1[1].wReg) ) // Write After Write
 		{
 			//TODO: CODE HERE
 		}
 		// WAR and WAW Data hazard with 2 instructions of difference: +2 stalls
-		if( areValidEqualRegisters(currInst.wReg, prev2Inst.r1Reg) || areValidEqualRegisters(currInst.wReg, prev2Inst.r2Reg) // Write Afeter Read
-	  	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
+		if( areValidEqualRegisters(history1[0].wReg, history1[2].r1Reg) || areValidEqualRegisters(history1[0].wReg, history1[2].r2Reg) // Write Afeter Read
+	  	 || areValidEqualRegisters(history1[0].wReg, history1[2].wReg) ) // Write After Write
 		{
 			//TODO: CODE HERE
 		}
@@ -168,14 +168,27 @@ void checkDataHazards()
 	cycles     += stallCount;
 }
 
+//TODO: remove it if not using
+instructionInfo* newInstructionInfo(instructionInfo value)
+{
+	instructionInfo *newInstruc = (instructionInfo*) malloc(sizeof(instructionInfo));
+	*newInstruc = value;
+	return newInstruc;
+}
+
 void updatePipeline(instructionInfo enteringInstruction)
 {
 	// Update pipelines
-	if(IS_SUPERESCALAR)
+	if(!IS_SUPERESCALAR)
 	{
-		history1.insert(hystory.begin(), enteringInstruction);
-		if(history1.size() > pipeline_size) {
-			history1.erase(history1.end());
+		// Because std vector uses references, we need to create new ones
+		// (pointers) to constants of same value becoming differents objects
+		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+		// Add new instruction to the pipeline
+		history1.insert(history1.begin(), *tmp);
+		if(history1.size() > pipeLineSize) {
+			// Remove the last instruction
+			history1.pop_back();
 		}
 	}
 	else
@@ -192,7 +205,7 @@ void updatePipeline(instructionInfo enteringInstruction)
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-  //  printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   //printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
    dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
@@ -225,9 +238,17 @@ void ac_behavior( Type_J ){}
 void ac_behavior(begin)
 {
 	// Initialize instructions in pipeline (initialy empty)
-	currInst  = NO_INSTRUC;
-	prevInst  = NO_INSTRUC;
-	prev2Inst = NO_INSTRUC;
+	for(int i=0;i<pipeLineSize;i++){
+		// Because std vector uses references, we need to create new ones
+		// (pointers) to constants of same value becoming differents objects
+		instructionInfo *tmp = new instructionInfo NO_INSTRUC;
+		// Add new instruction to the pipeline
+		history1.push_back(*tmp);
+		if(IS_SUPERESCALAR){
+			// Remove the last instruction
+			history2.push_back(*tmp);
+    	}
+  	}
 
   dbg_printf("@@@ begin behavior @@@\n");
   RB[0] = 0;
