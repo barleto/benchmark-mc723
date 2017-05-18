@@ -45,7 +45,6 @@ static int processors_started = 0;
 /******************************************************************************/
 // NOSSAS MODIFICAÇÕES AQUI!! //
 
-// Ricardo - incio
 FILE * traceFile;
 
 int instructionCount = 0;
@@ -85,9 +84,6 @@ void branchPredictionUpdate(bool isBranchTaken){
   }
   branchPredictorState = isBranchTaken? TAKEN : NOT_TAKEN;
 }
-// Ricardo - final
-
-// VITOR - inicio //
 
 enum instructionType { LOAD, WRITE, OTHER };
 
@@ -129,19 +125,17 @@ void checkDataHazards()
 {
 	// Counter for data stalls
 	int stallCount = 0;
-
 	// RAW Data hazard with 1 instructions of difference: +1 stall
 	if( areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) )
 	{
 		stallCount = 2;
-		dataHazard++;
 	}
 	// RAW Data hazard with 2 instructions of difference: +2 stalls
 	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
 	{
 		stallCount = 1;
-		dataHazard++;
   }
+  if(stallCount > 0){dataHazard++;}
 
 	//TODO: SUPERSCALAR STALLS
 	if(IS_SUPERESCALAR)
@@ -185,16 +179,13 @@ void updatePipeline(instructionInfo enteringInstruction)
 	currInst  = NO_INSTRUC;
 }
 
-// VITOR - fim //
-
-
 /******************************************************************************/
 
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-   printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
-  //  dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
+  //  printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
   npc = ac_pc + 4;
@@ -257,9 +248,24 @@ void ac_behavior(end)
   }else{
     printf("Not active - branch is predicted as always not taken\n");
   }
+  printf("Forwarding active: ");
+  if(USING_FOWARDING){
+    printf("True\n");
+  }else{
+    printf("False\n");
+  }
+  printf("Superscalar: ");
+  if(IS_SUPERESCALAR){
+    printf("True\n");
+  }else{
+    printf("False\n");
+  }
+  printf("Pipeline Size: %d\n", pipeLineSize);
   printf("BranchStalls: %d (%.1f%c of all cycles)\n", branchStalls,(float)branchStalls/(float)cycles * 100,'%');
-  printf("data stalls = %d (%g\%)\ndata hazards = %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100), dataHazard);
-  printf("Cicles: %d\n",cycles);
+  printf("Control Hazards: %d\n", branchStalls/3);
+  printf("Data stalls: %d (%.1f%c of all cycles)\nData hazards: %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100),'%', dataHazard);
+  printf("Total cycle count: %d\n",cycles);
+  printf("Instruction Count: %d\n", instructionCount);
 }
 
 

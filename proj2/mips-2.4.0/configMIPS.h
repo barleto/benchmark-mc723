@@ -12,3 +12,6 @@ bool generateTraces = true;//generate traces for later use in DineroIV
 
 //Control Hazard config
 bool isPredictorActive = true;
+
+//Pipeline Size
+int pipeLineSize = 5;
