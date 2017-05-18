@@ -47,7 +47,7 @@ static int processors_started = 0;
 
 FILE * traceFile;
 
-int instructionCount = 0;
+int instructionCount = -1;
 int cycles = 0; //contador de ciclos
 // Branch predictor variables
 int branchStalls = 0;
@@ -106,6 +106,8 @@ std::vector <instructionInfo> history1, history2;
 // 2 instructionInfo behinds current
 #define prev2Inst history1[2]
 
+int dataHazard = 0;
+int dataStalls = 0;
 
 bool areValidEqualRegisters(int register1, int register2)
 {
@@ -116,41 +118,105 @@ bool areValidEqualRegisters(int register1, int register2)
 	return false;
 }
 
-int dataHazard = 0;
-int dataStalls = 0;
+int getRangeForRawHazardCheck(){
+  switch (pipeLineSize) {
+    case 5:
+      return 3;
+    case 7:
+      return 4;
+    case 9:
+      return 5;
+    default:
+      return 3;
+  }
+}
+
+bool wRegEqualsAnyRReg(instructionInfo wRegInstr, instructionInfo instr){
+  if(areValidEqualRegisters(instr.r1Reg, wRegInstr.wReg) || areValidEqualRegisters(instr.r2Reg, wRegInstr.wReg)){
+    return true;
+  }
+  return false;
+}
+
+int RawDataHazard(){
+  instructionInfo firstInst = history1[0];
+  for(int i = 1; i<getRangeForRawHazardCheck();i++){
+    if(wRegEqualsAnyRReg(history1[i],firstInst)){
+      int extraStalls = getRangeForRawHazardCheck() - i;
+      cycles += extraStalls;
+      return extraStalls;
+    }
+  }
+  return 0;
+}
+
+int RawDataHazardSuperScalar(){
+  instructionInfo firstInst = history1[0];
+  for(int i = 1; i<getRangeForRawHazardCheck();i++){
+    if(wRegEqualsAnyRReg(history1[i],firstInst)){
+      int extraStalls = getRangeForRawHazardCheck() - i;
+      cycles += extraStalls;
+      return extraStalls;
+    }
+  }
+  for(int i = 1; i<getRangeForRawHazardCheck();i++){
+    if(wRegEqualsAnyRReg(history2[i],firstInst)){
+      int extraStalls = getRangeForRawHazardCheck() - i;
+      cycles += extraStalls;
+      return extraStalls;
+    }
+  }
+
+  firstInst = history2[0];
+  for(int i = 1; i<getRangeForRawHazardCheck();i++){
+    if(wRegEqualsAnyRReg(history1[i],firstInst)){
+      int extraStalls = getRangeForRawHazardCheck() - i;
+      cycles += extraStalls;
+      return extraStalls;
+    }
+  }
+  for(int i = 1; i<getRangeForRawHazardCheck();i++){
+    if(wRegEqualsAnyRReg(history2[i],firstInst)){
+      int extraStalls = getRangeForRawHazardCheck() - i;
+      cycles += extraStalls;
+      return extraStalls;
+    }
+  }
+  if(wRegEqualsAnyRReg(history1[0],firstInst)){
+    int extraStalls = getRangeForRawHazardCheck();
+    cycles += extraStalls;
+    return extraStalls;
+  }
+
+  return 0;
+}
 
 void checkDataHazards()
 {
 	// Counter for data stalls
 	int stallCount = 0;
-	// RAW Data hazard with 1 instructions of difference: +1 stall
-	if( areValidEqualRegisters(currInst.r1Reg, prevInst.wReg) || areValidEqualRegisters(currInst.r2Reg, prevInst.wReg) )
-	{
-		stallCount = 2;
-	}
-	// RAW Data hazard with 2 instructions of difference: +2 stalls
-	if( areValidEqualRegisters(currInst.r1Reg, prev2Inst.wReg) || areValidEqualRegisters(currInst.r2Reg, prev2Inst.wReg) )
-	{
-		stallCount = 1;
-  }
-  if(stallCount > 0){dataHazard++;}
 
-	//TODO: SUPERSCALAR STALLS
 	if(IS_SUPERESCALAR)
 	{
-		// WAR and WAW Data hazard with 1 instructions of difference: +1 stalls
-		if( areValidEqualRegisters(currInst.wReg, prevInst.r1Reg) || areValidEqualRegisters(currInst.wReg, prevInst.r2Reg) // Write Afeter Read
-	  	 || areValidEqualRegisters(currInst.wReg, prevInst.wReg) ) // Write After Write
-		{
-			//TODO: CODE HERE
-		}
-		// WAR and WAW Data hazard with 2 instructions of difference: +2 stalls
-		if( areValidEqualRegisters(currInst.wReg, prev2Inst.r1Reg) || areValidEqualRegisters(currInst.wReg, prev2Inst.r2Reg) // Write Afeter Read
-	  	 || areValidEqualRegisters(currInst.wReg, prev2Inst.wReg) ) // Write After Write
-		{
-			//TODO: CODE HERE
-		}
-	}
+    // RAW Data hazard
+    stallCount += RawDataHazardSuperScalar();
+    if(stallCount > 0){dataHazard++;}
+
+		// WAW Data Hazard
+    if(history2.size() == pipeLineSize){
+      instructionInfo Instr1 = history1[0];
+      instructionInfo Instr2 = history2[0];
+      if(areValidEqualRegisters(Instr1.wReg, Instr2.wReg)){
+        dataHazard++;
+        stallCount++;
+        cycles++;
+      }
+    }
+	}else{
+    // RAW Data hazard
+  	stallCount += RawDataHazard();
+    if(stallCount > 0){dataHazard++;}
+  }
 
 	// If a data hazard occured when using fowarding
 	if(stallCount > 0 && USING_FOWARDING && !IS_SUPERESCALAR)
@@ -166,16 +232,26 @@ void checkDataHazards()
 void updatePipeline(instructionInfo enteringInstruction)
 {
 	// Update pipelines
-	if(IS_SUPERESCALAR)
+	if(!IS_SUPERESCALAR)
 	{
-		history1.insert(hystory.begin(), enteringInstruction);
-		if(history1.size() > pipeline_size) {
+		history1.insert(history1.begin(), enteringInstruction);
+		if(history1.size() > pipeLineSize) {
 			history1.erase(history1.end());
 		}
 	}
 	else
 	{
-		//TODO: SUPERSCALAR STUFF
+		if(instructionCount % 2 == 0){
+      history1.insert(history1.begin(), enteringInstruction);
+  		if(history1.size() > pipeLineSize) {
+  			history1.erase(history1.end());
+  		}
+    }else{
+      history2.insert(history2.begin(), enteringInstruction);
+      if(history2.size() > pipeLineSize) {
+        history2.erase(history2.end());
+      }
+    }
 	}
 
 	// Check hazards:
@@ -220,9 +296,12 @@ void ac_behavior( Type_J ){}
 void ac_behavior(begin)
 {
 	// Initialize instructions in pipeline (initialy empty)
-	currInst  = NO_INSTRUC;
-	prevInst  = NO_INSTRUC;
-	prev2Inst = NO_INSTRUC;
+	for(int i=0;i<pipeLineSize;i++){
+    history1.push_back(NO_INSTRUC);
+    if(IS_SUPERESCALAR){
+      history2.push_back(NO_INSTRUC);
+    }
+  }
 
   dbg_printf("@@@ begin behavior @@@\n");
   RB[0] = 0;
@@ -230,7 +309,7 @@ void ac_behavior(begin)
 
   // Is is not required by the architecture, but makes debug really easier
   for (int regNum = 0; regNum < 32; regNum ++)
-    RB[regNum] = 0;
+  RB[regNum] = 0;
   hi = 0;
   lo = 0;
 
