@@ -89,24 +89,22 @@ enum instructionType { LOAD, WRITE, OTHER };
 
 typedef struct instructionInfo
 {
-	// mips_parms::mips_isa type; // tipo da instrução (0-aritmetica, 1-load)
 	int  wReg, // -1 if not using
 		r1Reg,
 		r2Reg;
 	bool valid; // indica se é uma instruçâo válida ou não
 } instructionInfo;
-// updatePipeline( { w, r1, r2, true } )
 #define NO_INSTRUC { -1, -1, -1, false }
 
-// current instructionInfo
-#define currInst  instrucs[0]
-// previous instructionInfo (behind current)
-#define prevInst  instrucs[1]
-// 2 instructionInfo behinds current
-#define prev2Inst instrucs[2]
+// Pipeline Instructions Hystory:
+std::vector <instructionInfo> history1, history2;
 
-// Pipeline Instructions:
-instructionInfo instrucs[3];
+// current instructionInfo
+#define currInst  history1[0]
+// previous instructionInfo (behind current)
+#define prevInst  history1[1]
+// 2 instructionInfo behinds current
+#define prev2Inst history1[2]
 
 
 bool areValidEqualRegisters(int register1, int register2)
@@ -167,16 +165,21 @@ void checkDataHazards()
 
 void updatePipeline(instructionInfo enteringInstruction)
 {
-	// Update the current instruction to the one entering right now at the pipeline
-	currInst = enteringInstruction;
+	// Update pipelines
+	if(IS_SUPERESCALAR)
+	{
+		history1.insert(hystory.begin(), enteringInstruction);
+		if(history1.size() > pipeline_size) {
+			history1.erase(history1.end());
+		}
+	}
+	else
+	{
+		//TODO: SUPERSCALAR STUFF
+	}
 
 	// Check hazards:
 	checkDataHazards();
-
-	// Update instructions order in pipeline:
-	prev2Inst = prevInst;
-	prevInst  = currInst;
-	currInst  = NO_INSTRUC;
 }
 
 /******************************************************************************/
