@@ -243,8 +243,8 @@ void updatePipeline(instructionInfo enteringInstruction)
 		instructionInfo *tmp = new instructionInfo (enteringInstruction);
 		// Add new instruction to the pipeline
 		history1.insert(history1.begin(), *tmp);
+		// Remove the last instruction
 		if(history1.size() > pipeLineSize) {
-			// Remove the last instruction
 			history1.pop_back();
 		}
 	}
@@ -268,9 +268,20 @@ void updatePipeline(instructionInfo enteringInstruction)
   		history2.insert(history2.begin(), *tmp);
   		if(history2.size() > pipeLineSize) {
   			// Remove the last instruction
-  			history2.pop_back();
-  		}
-    }
+	  		if(history1.size() > pipeLineSize) {
+	  			history1.pop_back();
+	  		}
+		}else{
+	      	// Because std vector uses references, we need to create new ones
+	  		// (pointers) to constants of same value becoming differents objects
+	  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+	  		// Add new instruction to the pipeline
+	  		history2.insert(history2.begin(), *tmp);
+			// Remove the last instruction
+	  		if(history2.size() > pipeLineSize) {
+	  			history2.pop_back();
+	  		}
+	    }
 	}
 
 	// Check hazards:
@@ -322,7 +333,7 @@ void ac_behavior(begin)
 		// Add new instruction to the pipeline
 		history1.push_back(*tmp);
 		if(IS_SUPERESCALAR){
-      instructionInfo *tmp2 = new instructionInfo NO_INSTRUC;
+      		instructionInfo *tmp2 = new instructionInfo NO_INSTRUC;
 			history2.push_back(*tmp2);
     	}
   	}
