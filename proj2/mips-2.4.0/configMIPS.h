@@ -14,4 +14,4 @@ bool generateTraces = true;//generate traces for later use in DineroIV
 bool isPredictorActive = true;
 
 //Pipeline Size
-int pipeLineSize = 5;
+int pipeLineSize = 7;

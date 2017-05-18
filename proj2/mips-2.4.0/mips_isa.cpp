@@ -87,13 +87,18 @@ void branchPredictionUpdate(bool isBranchTaken){
 
 enum instructionType { LOAD, WRITE, OTHER };
 
+// Struct used for save instructions information
 typedef struct instructionInfo
 {
-	int  wReg, // -1 if not using
+	// Registers: 1 for writing, 2 for reading (negatives values mean not using)
+	int  wReg,
 		r1Reg,
 		r2Reg;
-	bool valid; // indica se é uma instruçâo válida ou não
+	// Indicates if it's a valid instrucion or a bubble/stall
+	bool valid;
 } instructionInfo;
+
+// Empty instruction:
 #define NO_INSTRUC { -1, -1, -1, false }
 
 // Pipeline Instructions Hystory:
@@ -143,7 +148,6 @@ int RawDataHazard(){
   for(int i = 1; i<getRangeForRawHazardCheck();i++){
     if(wRegEqualsAnyRReg(history1[i],firstInst)){
       int extraStalls = getRangeForRawHazardCheck() - i;
-      cycles += extraStalls;
       return extraStalls;
     }
   }
@@ -155,14 +159,12 @@ int RawDataHazardSuperScalar(){
   for(int i = 1; i<getRangeForRawHazardCheck();i++){
     if(wRegEqualsAnyRReg(history1[i],firstInst)){
       int extraStalls = getRangeForRawHazardCheck() - i;
-      cycles += extraStalls;
       return extraStalls;
     }
   }
   for(int i = 1; i<getRangeForRawHazardCheck();i++){
     if(wRegEqualsAnyRReg(history2[i],firstInst)){
       int extraStalls = getRangeForRawHazardCheck() - i;
-      cycles += extraStalls;
       return extraStalls;
     }
   }
@@ -171,20 +173,17 @@ int RawDataHazardSuperScalar(){
   for(int i = 1; i<getRangeForRawHazardCheck();i++){
     if(wRegEqualsAnyRReg(history1[i],firstInst)){
       int extraStalls = getRangeForRawHazardCheck() - i;
-      cycles += extraStalls;
       return extraStalls;
     }
   }
   for(int i = 1; i<getRangeForRawHazardCheck();i++){
     if(wRegEqualsAnyRReg(history2[i],firstInst)){
       int extraStalls = getRangeForRawHazardCheck() - i;
-      cycles += extraStalls;
       return extraStalls;
     }
   }
   if(wRegEqualsAnyRReg(history1[0],firstInst)){
     int extraStalls = getRangeForRawHazardCheck();
-    cycles += extraStalls;
     return extraStalls;
   }
 
@@ -229,14 +228,27 @@ void checkDataHazards()
 	cycles     += stallCount;
 }
 
+//TODO: remove it if not using
+instructionInfo* newInstructionInfo(instructionInfo value)
+{
+	instructionInfo *newInstruc = (instructionInfo*) malloc(sizeof(instructionInfo));
+	*newInstruc = value;
+	return newInstruc;
+}
+
 void updatePipeline(instructionInfo enteringInstruction)
 {
 	// Update pipelines
 	if(!IS_SUPERESCALAR)
 	{
-		history1.insert(history1.begin(), enteringInstruction);
+		// Because std vector uses references, we need to create new ones
+		// (pointers) to constants of same value becoming differents objects
+		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+		// Add new instruction to the pipeline
+		history1.insert(history1.begin(), *tmp);
 		if(history1.size() > pipeLineSize) {
-			history1.erase(history1.end());
+			// Remove the last instruction
+			history1.pop_back();
 		}
 	}
 	else
@@ -263,7 +275,7 @@ void updatePipeline(instructionInfo enteringInstruction)
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-  //  printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   //printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
    dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
@@ -297,11 +309,16 @@ void ac_behavior(begin)
 {
 	// Initialize instructions in pipeline (initialy empty)
 	for(int i=0;i<pipeLineSize;i++){
-    history1.push_back(NO_INSTRUC);
-    if(IS_SUPERESCALAR){
-      history2.push_back(NO_INSTRUC);
-    }
-  }
+		// Because std vector uses references, we need to create new ones
+		// (pointers) to constants of same value becoming differents objects
+		instructionInfo *tmp = new instructionInfo NO_INSTRUC;
+		// Add new instruction to the pipeline
+		history1.push_back(*tmp);
+		if(IS_SUPERESCALAR){
+			// Remove the last instruction
+			history2.push_back(*tmp);
+    	}
+  	}
 
   dbg_printf("@@@ begin behavior @@@\n");
   RB[0] = 0;
@@ -321,6 +338,7 @@ void ac_behavior(begin)
 //!Behavior called after finishing simulation
 void ac_behavior(end)
 {
+  instructionCount++;
   dbg_printf("@@@ end behavior @@@\n");
 
   printf("##### Relatório final: #####\n");
