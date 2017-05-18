@@ -246,34 +246,34 @@ void updatePipeline(instructionInfo enteringInstruction)
 		instructionInfo *tmp = new instructionInfo (enteringInstruction);
 		// Add new instruction to the pipeline
 		history1.insert(history1.begin(), *tmp);
+		// Remove the last instruction
 		if(history1.size() > pipeLineSize) {
-			// Remove the last instruction
 			history1.pop_back();
 		}
 	}
 	else
 	{
 		if(instructionCount % 2 == 0){
-      // Because std vector uses references, we need to create new ones
-  		// (pointers) to constants of same value becoming differents objects
-  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
-  		// Add new instruction to the pipeline
-  		history1.insert(history1.begin(), *tmp);
-  		if(history1.size() > pipeLineSize) {
+	      	// Because std vector uses references, we need to create new ones
+	  		// (pointers) to constants of same value becoming differents objects
+	  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+	  		// Add new instruction to the pipeline
+	  		history1.insert(history1.begin(), *tmp);
   			// Remove the last instruction
-  			history1.pop_back();
-  		}
-    }else{
-      // Because std vector uses references, we need to create new ones
-  		// (pointers) to constants of same value becoming differents objects
-  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
-  		// Add new instruction to the pipeline
-  		history2.insert(history1.begin(), *tmp);
-  		if(history2.size() > pipeLineSize) {
-  			// Remove the last instruction
-  			history2.pop_back();
-  		}
-    }
+	  		if(history1.size() > pipeLineSize) {
+	  			history1.pop_back();
+	  		}
+		}else{
+	      	// Because std vector uses references, we need to create new ones
+	  		// (pointers) to constants of same value becoming differents objects
+	  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+	  		// Add new instruction to the pipeline
+	  		history2.insert(history2.begin(), *tmp);
+			// Remove the last instruction
+	  		if(history2.size() > pipeLineSize) {
+	  			history2.pop_back();
+	  		}
+	    }
 	}
 
 	// Check hazards:
@@ -285,7 +285,7 @@ void updatePipeline(instructionInfo enteringInstruction)
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
-   //printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
+   printf("----- PC=%#x ----- %lld\n", (int) ac_pc, ac_instr_counter);
    dbg_printf("----- PC=%#x NPC=%#x ----- %lld\n", (int) ac_pc, (int)npc, ac_instr_counter);
 #ifndef NO_NEED_PC_UPDATE
   ac_pc = npc;
@@ -325,7 +325,7 @@ void ac_behavior(begin)
 		// Add new instruction to the pipeline
 		history1.push_back(*tmp);
 		if(IS_SUPERESCALAR){
-      instructionInfo *tmp2 = new instructionInfo NO_INSTRUC;
+      		instructionInfo *tmp2 = new instructionInfo NO_INSTRUC;
 			history2.push_back(*tmp2);
     	}
   	}
