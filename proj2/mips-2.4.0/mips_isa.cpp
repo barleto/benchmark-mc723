@@ -214,7 +214,7 @@ void checkDataHazards()
     }
 	}else{
     // RAW Data hazard
-    if(USING_FOWARDING){
+    if(!USING_FOWARDING){
   	   stallCount += RawDataHazard();
     }
     if(stallCount > 0){dataHazard++;}
@@ -261,17 +261,6 @@ void updatePipeline(instructionInfo enteringInstruction)
   			history1.pop_back();
   		}
     }else{
-      // Because std vector uses references, we need to create new ones
-  		// (pointers) to constants of same value becoming differents objects
-  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
-  		// Add new instruction to the pipeline
-  		history2.insert(history2.begin(), *tmp);
-  		if(history2.size() > pipeLineSize) {
-  			// Remove the last instruction
-	  		if(history1.size() > pipeLineSize) {
-	  			history1.pop_back();
-	  		}
-		}else{
 	      	// Because std vector uses references, we need to create new ones
 	  		// (pointers) to constants of same value becoming differents objects
 	  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
