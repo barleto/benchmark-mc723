@@ -8,10 +8,10 @@ bool generateTraces = true;//generate traces for later use in DineroIV
 #define USING_FOWARDING	false
 
 //Superscalar config
-#define IS_SUPERESCALAR	false
+#define IS_SUPERESCALAR	true
 
 //Control Hazard config
 bool isPredictorActive = true;
 
 //Pipeline Size
-int pipeLineSize = 7;
+int pipeLineSize = 5;

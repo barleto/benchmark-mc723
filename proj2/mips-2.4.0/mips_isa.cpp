@@ -254,15 +254,25 @@ void updatePipeline(instructionInfo enteringInstruction)
 	else
 	{
 		if(instructionCount % 2 == 0){
-      history1.insert(history1.begin(), enteringInstruction);
+      // Because std vector uses references, we need to create new ones
+  		// (pointers) to constants of same value becoming differents objects
+  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+  		// Add new instruction to the pipeline
+  		history1.insert(history1.begin(), *tmp);
   		if(history1.size() > pipeLineSize) {
-  			history1.erase(history1.end());
+  			// Remove the last instruction
+  			history1.pop_back();
   		}
     }else{
-      history2.insert(history2.begin(), enteringInstruction);
-      if(history2.size() > pipeLineSize) {
-        history2.erase(history2.end());
-      }
+      // Because std vector uses references, we need to create new ones
+  		// (pointers) to constants of same value becoming differents objects
+  		instructionInfo *tmp = new instructionInfo (enteringInstruction);
+  		// Add new instruction to the pipeline
+  		history2.insert(history1.begin(), *tmp);
+  		if(history2.size() > pipeLineSize) {
+  			// Remove the last instruction
+  			history2.pop_back();
+  		}
     }
 	}
 
@@ -315,8 +325,8 @@ void ac_behavior(begin)
 		// Add new instruction to the pipeline
 		history1.push_back(*tmp);
 		if(IS_SUPERESCALAR){
-			// Remove the last instruction
-			history2.push_back(*tmp);
+      instructionInfo *tmp2 = new instructionInfo NO_INSTRUC;
+			history2.push_back(*tmp2);
     	}
   	}
 
@@ -341,7 +351,7 @@ void ac_behavior(end)
   instructionCount++;
   dbg_printf("@@@ end behavior @@@\n");
 
-  printf("##### Relatório final: #####\n");
+  printf("##### Final Report: #####\n");
   printf("Branch predictor = ");
   if(isPredictorActive){
     printf("1 bit branch predictor\n");
@@ -364,7 +374,12 @@ void ac_behavior(end)
   printf("BranchStalls: %d (%.1f%c of all cycles)\n", branchStalls,(float)branchStalls/(float)cycles * 100,'%');
   printf("Control Hazards: %d\n", branchStalls/3);
   printf("Data stalls: %d (%.1f%c of all cycles)\nData hazards: %d\n", dataStalls, (((float) dataStalls)/((float)cycles)*100),'%', dataHazard);
-  printf("Total cycle count: %d\n",cycles);
+  printf("Total cycle count: ");
+  if(IS_SUPERESCALAR){
+    printf("%d\n",(cycles-dataStalls-branchStalls)/2+dataStalls+branchStalls);
+  }else{
+    printf("%d\n",cycles);
+  }
   printf("Instruction Count: %d\n", instructionCount);
 }
 
