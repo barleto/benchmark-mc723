@@ -124,17 +124,17 @@ Medidas obtidas indiretamente:
 
 ##### Ordenado por tempo de execução aproximado
 
-| Config      | C5c2   | C5c1   | C9c2   | C9c1   | C5b2   | C9b2   | C5b1   | C9b1   | C5a2   | C5a1   | C9a2    | C9a1    | C5c2     | C9c2     | C5c1     | C9c1     | C5b2     | C9b2     | C5b1     | C9b1     | C5a2     | C5a1     | C9a2     | C9a1     |
-|-------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|---------|---------|----------|----------|----------|----------|----------|----------|----------|----------|----------|----------|----------|----------|
-| Programa | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort |
-| tempo aprox | 539024 | 563544 | 607598 | 632118 | 788779 | 788779 | 813299 | 813299 | 971806 | 996326 | 1495263 | 1519783 | 11738163 | 12115299 | 13449113 | 13826249 | 21160128 | 21160128 | 22871078 | 22871078 | 33509272 | 35220222 | 49327171 | 51038121 |
+| Config      | C5c2     | C9a1     | C5c2     | C9a1     |
+|-------------|----------|----------|----------|----------|
+| Programa    | bitcount | bitcount | qsort    | qsort    |
+| tempo aprox | 539024   | 1519783  | 11738163 | 51038121 |
 
 ##### Ordenado por Programa e Branch Stalls
 
-| Config        | C5a2   | C5a1   | C5c2   | C5c1   | C5b2   | C5b1   | C9a2   | C9a1   | C9c2   | C9c1   | C9b2   | C9b1   | C5c2    | C5c1    | C5b2    | C5b1    | C9c2    | C9c1    | C9b2    | C9b1    | C5a2    | C5a1    | C9a2    | C9a1    |
-|---------------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| Programa | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | bitcount | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort | qsort |
-| Branch Stalls | 171651 | 171651 | 205722 | 205722 | 205722 | 205722 | 286085 | 286085 | 342870 | 342870 | 342870 | 342870 | 1131408 | 1131408 | 1131408 | 1131408 | 1885680 | 1885680 | 1885680 | 1885680 | 3012852 | 3012852 | 5021420 | 5021420 |
+| Config        | C5a2     | C9b1     | C5c2    | C9a1    |
+|---------------|----------|----------|---------|---------|
+| Programa      | bitcount | bitcount | qsort   | qsort   |
+| Branch Stalls | 171651   | 342870   | 1131408 | 5021420 |
 
 ### Análise e Conclusões
 A partir dos dados obtidos acima fizemos as seguintes conclusões:
