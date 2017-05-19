@@ -70,27 +70,37 @@ Os atributos usados para montar as configurações de arquitetura foram:
 	- *Tamanho*: **5**, **7** e **9**
 	- *Fowarding*: **com** e **sem**
 	- *Concorrência*: **escalar** e **superescalar**
-	- *Branch Predictor*: **ativo** e **inativo**
+	- *Branch Predictor*:
+		+ **Inativo/Nenhum**
+		+ **Always not taken**
+		+ **1 bit indicador de taken**
 * <b>Cache</b>
 	- Quantidade de *traces* a executar: fixo em 20
-	- Tamanho das caches, seus blocos e associatividade
+	- Veja a tabela a seguir
 
-### Cache
+##### Cache
 As configurações de cache avaliadas serão as mostradas na tabela abaixo.
 
 | Configuração | L1usize| L1block | Associatividade L1 | L2usize | L2block | Associatividade L2 |
 |:------------:|:------:|:-------:|:------------------:|:------:|:-------:|:------------------:|
-|       1      |   32   |    64   |          2         |   256  |   1024  |          2         |
-|       2      |   64   |   128   |          2         |   512  |   1024  |          2         |
-|       3      |   128  |   128   |          2         |  1024  |   2048  |          2         |
-|       4      |   128  |   128   |          2         |  1024  |   2048  |          4         |
+|    Cache 1   |   32   |    64   |          2         |   256  |   1024  |          2         |
+|    Cache 2   |   64   |   128   |          2         |   512  |   1024  |          2         |
+|    Cache 3   |   128  |   128   |          2         |  1024  |   2048  |          2         |
+|    Cache 4   |   128  |   128   |          2         |  1024  |   2048  |          4         |
 
-#### Branch Predictor
-Utilizando as configurações anteriores, utilizaremos os seguintes branch predictors:
+Por fim usaremos as seguintes configurações:
+#### Configurações Usadas
 
-* Sem branch predictor
-* Always not taken
-* 1 bit,indicador de taken
+| Configuração |  Pipeline  |     Tipo     | Fowarding | Branch Predictor |  Cache  |
+|:------------:|:----------:|:------------:|:---------:|:----------------:|:-------:|
+|   PIOR-5     | 5 estágios |    Escalar   |    NÃO    |      Inativo     | Cache 1 |
+|   PIOR-9     | 9 estágios |    Escalar   |    NÃO    |      Inativo     | Cache 1 |
+|   MEDIA-1    | 7 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
+|   MELHOR-5   | 5 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
+|   MELHOR-9   | 9 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
+
+PIOR: vemos impacto de estagios em escalar
+MELHOR: vemos impacto de estagios em superescalar
 
 ### Resultados
 Dados e tabelas aqui...
