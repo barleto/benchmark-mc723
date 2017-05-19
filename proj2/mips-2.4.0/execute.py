@@ -62,4 +62,13 @@ for line in stdoutdata.split("\n"):
     if line.find("Trace File Name: ")!=-1:
         tracefilename = line[17:]
 
+stdoutdata = subprocess.getoutput("./dineroIV -maxtrace 20 -l1-usize 32K -l1-ubsize 64 -l1-uassoc 2 -l2-usize 256K -l2-ubsize 1024 -l2-uassoc 2 -informat d < {}".format(tracefilename))
+findError(stdoutdata,"dinero 1")
+stdoutdata = subprocess.getoutput("./dineroIV -maxtrace 20 -l1-usize 64K -l1-ubsize 128 -l1-uassoc 2 -l2-usize 512K -l2-ubsize 1024 -l2-uassoc 2 -informat d < {}".format(tracefilename))
+findError(stdoutdata,"dinero 2")
+stdoutdata = subprocess.getoutput("./dineroIV -maxtrace 20 -l1-usize 128K -l1-ubsize 128 -l1-uassoc 2 -l2-usize 1024K -l2-ubsize 2048 -l2-uassoc 2 -informat d < {}".format(tracefilename))
+findError(stdoutdata,"dinero 3")
+stdoutdata = subprocess.getoutput("./dineroIV -maxtrace 20 -l1-usize 128K -l1-ubsize 128 -l1-uassoc 2 -l2-usize 1024K -l2-ubsize 2048 -l2-uassoc 4 -informat d < {}".format(tracefilename))
+findError(stdoutdata,"dinero 4")
+
 print("\n".join(report))
