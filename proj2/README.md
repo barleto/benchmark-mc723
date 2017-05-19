@@ -116,8 +116,8 @@ Ex: C5a será rodada para cada um das 2 configurações de cache, resultando nas
 | tempo aprox | 996326 | 35220222 | 971806 | 33509272 | 813299 | 22871078 | 788779 | 21160128 | 563544 | 13449113 | 539024 | 11738163 | 1519783 | 51038121 | 1495263 | 49327171 | 813299 | 22871078 | 788779 | 21160128 | 632118 | 13826249 | 607598 | 12115299 |
 
 Medidas obtidas indiretamente:
-- CPI = Ciclos / Instruções
-- tempo aprox = ciclos + L1Miss*10 + L2Miss*600
+- `CPI = Ciclos / Instruções`
+- `tempo aprox = ciclos + (L1Miss x 10) + (L2Miss x 600)`
 
 ##### Ordenado por tempo de execução aproximado
 
