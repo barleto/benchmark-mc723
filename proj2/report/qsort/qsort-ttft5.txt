@@ -71,21 +71,21 @@ l2-ucache
 ---Execution complete.
 ######################
 ##### Final Report: #####
-Branch predictor = Not active - branch is predicted as always not taken
-Forwarding active: False
+Branch predictor = 1 bit branch predictor
+Forwarding active: True
 Superscalar: False
-Pipeline Size: 9
-BranchStalls: 5021420 (10.3% of all cycles)
-Control Hazards: 1673806
-Data stalls: 26285599 (53.8% of all cycles)
-Data hazards: 8097094
-Total cycle count: 48886631
+Pipeline Size: 5
+BranchStalls: 1131408 (5.5% of all cycles)
+Control Hazards: 377136
+Data stalls: 0 (0.0% of all cycles)
+Data hazards: 0
+Total cycle count: 20719588
 Instruction Count: 19588180
 Trace File Name: ./traceOut_Hello.din
 
 Info: /OSCI/SystemC: Simulation stopped by user.
 ArchC: Simulation statistics
-    Times: 4.85 user, 0.17 system, 5.04 real
+    Times: 4.52 user, 0.19 system, 4.75 real
     Number of instructions executed: 19593243
-    Simulation speed: 4039.84 K instr/s
+    Simulation speed: 4334.79 K instr/s
 
