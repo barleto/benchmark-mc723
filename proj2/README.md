@@ -91,16 +91,23 @@ As configurações de cache avaliadas serão as mostradas na tabela abaixo.
 Por fim usaremos as seguintes configurações:
 #### Configurações Usadas
 
-| Configuração |  Pipeline  |     Tipo     | Fowarding | Branch Predictor |  Cache  |
-|:------------:|:----------:|:------------:|:---------:|:----------------:|:-------:|
-|   PIOR-5     | 5 estágios |    Escalar   |    NÃO    |      Inativo     | Cache 1 |
-|   PIOR-9     | 9 estágios |    Escalar   |    NÃO    |      Inativo     | Cache 1 |
-|   MEDIA-1    | 7 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
-|   MELHOR-5   | 5 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
-|   MELHOR-9   | 9 estágios | Superescalar |    SIM    | 1 bit de *taken* | Cache 4 |
+| Configuração |     Tipo     | Fowarding | Branch Predictor |
+|:------------:|:------------:|:---------:|:----------------:|
+|**5 estágios**|              |           |                  |
+|      C5a     |    Escalar   |    NÃO    |      Inativo     |
+|      C5b     | Superescalar |    NÃO    |      Inativo     |
+|      C5c     | Superescalar |    SIM    | 1 bit de *taken* |
+|**7 estágios**|              |           |                  |
+|      C7a     |    Escalar   |    NÃO    |      Inativo     |
+|      C7b     | Superescalar |    NÃO    |      Inativo     |
+|      C7c     | Superescalar |    SIM    | 1 bit de *taken* |
+|**8 estágios**|              |           |                  |
+|      C9a     |    Escalar   |    NÃO    |      Inativo     |
+|      C9b     | Superescalar |    NÃO    |      Inativo     |
+|      C9c     | Superescalar |    SIM    | 1 bit de *taken* |
 
-PIOR: vemos impacto de estagios em escalar
-MELHOR: vemos impacto de estagios em superescalar
+**OBS:** Todas as configurações acima serão testadas com todas as configurções de cache.
+Ex: C5a será rodada para cada um das 4 configurações de cache.
 
 ### Resultados
 Dados e tabelas aqui...
