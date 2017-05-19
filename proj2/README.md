@@ -16,7 +16,12 @@
   - Branch predictor
   - Cache (Sendo essa testada a partir do Dinero IV)
 
+<br>
+##### Pipelines usados como referência:
 
+![pipelines](https://www.ecse.rpi.edu/frisc/finalreports/spring95/Image7.gif)
+
+<br>
 ## **Relatório**
 
 ### Ferramentas
@@ -36,7 +41,7 @@ Tipos de hazards e suas ocorrências:
 * <b>WAR</b> - não ocorre em nenhum caso estudado
 * <b>WAW</b> - ocorre apenas quando há concorrência, ou seja, somente nos processadores superescalares
 
-fonte: Wikipédia - seção sobre hazards ( https://en.wikipedia.org/wiki/Hazard_(computer_architecture) )
+fonte: <a href="https://en.wikipedia.org/wiki/Hazard_(computer_architecture)">Wikipédia - seção sobre hazards</a>
 
 ##### Parte Prática
 Adaptação do código fonte do mips (do simulador) que não possui muitas funcionalidades desejadas para as análises:
