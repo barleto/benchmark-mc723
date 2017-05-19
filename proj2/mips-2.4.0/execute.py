@@ -53,9 +53,13 @@ stdoutdata = subprocess.getoutput("./mips.x --load=hello2.mips")
 findError(stdoutdata,"mips.x")
 report = []
 flag = False
+tracefilename = ""
 for line in stdoutdata.split("\n"):
     if line == "##### Final Report: #####":
         flag = True
     if flag:
         report.append(line)
+    if line.find("Trace File Name: ")!=-1:
+        tracefilename = line[17:]
+
 print("\n".join(report))

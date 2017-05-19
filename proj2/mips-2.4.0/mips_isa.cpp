@@ -379,6 +379,10 @@ void ac_behavior(end)
     printf("%d\n",cycles);
   }
   printf("Instruction Count: %d\n", instructionCount);
+  if(generateTraces){
+    string traceFileName = "./traceOut_"+programName+".din";
+    printf("Trace File Name: %s\n", traceFileName.c_str());
+  }
 }
 
 
