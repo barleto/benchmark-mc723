@@ -60,10 +60,37 @@ As configurações foram feitas por código (através da biblioteca em **C** *co
 	- Quantidade de *traces* a executar
 	- Tamanho das caches, seus blocos e associatividade
 
-Também foi feito um script em *Python* para formatar e gerar dados a partir da saída do *simulador MIPS* e do *DineroIV*. Este é também capaz de mudar algumas das configurações.
+Também foi feito um script em *Python* para formatar e gerar dados a partir da saída do *simulador MIPS* e do *DineroIV*. Este script é também capaz de mudar algumas das configurações.
 
 Por fim tudo isto foi compilado e executado, gerando os dados que - foram melhor organizados numa tabela e - proporcionaram a análise que se encontra adiante.
 
+### Configurações
+Os atributos usados para montar as configurações de arquitetura foram:
+* <b>Pipeline</b>
+	- *Tamanho*: **5**, **7** e **9**
+	- *Fowarding*: **com** e **sem**
+	- *Concorrência*: **escalar** e **superescalar**
+	- *Branch Predictor*: **ativo** e **inativo**
+* <b>Cache</b>
+	- Quantidade de *traces* a executar: fixo em 20
+	- Tamanho das caches, seus blocos e associatividade
+
+	### Cache
+	As configurações de cache avaliadas serão as mostradas na tabela abaixo.
+
+	| Configuração | L1usize| L1block | Associatividade L1 | L2usize | L2block | Associatividade L2 |
+	|:------------:|:------:|:-------:|:------------------:|:------:|:-------:|:------------------:|
+	|       1      |   32   |    64   |          2         |   256  |   1024  |          2         |
+	|       2      |   64   |   128   |          2         |   512  |   1024  |          2         |
+	|       3      |   128  |   128   |          2         |  1024  |   2048  |          2         |
+	|       4      |   128  |   128   |          2         |  1024  |   2048  |          4         |
+
+	#### Branch Predictor
+	Utilizando as configurações anteriores, utilizaremos os seguintes branch predictors:
+
+	* Sem branch predictor
+	* Always not taken
+	* 1 bit,indicador de taken
 
 ### Resultados
 Dados e tabelas aqui...
