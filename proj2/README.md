@@ -138,6 +138,13 @@ A seguir algumas tabelas com os resultados apenas dos melhores e piores para cad
 | Programa      | bitcount | bitcount | qsort   | qsort   |
 | Branch Stalls | 171651   | 342870   | 1131408 | 5021420 |
 
+##### Ordenado por CPI
+
+| Config   | C5c2     | C9a1     | C5c2  | C9a1  |
+|----------|----------|----------|-------|-------|
+| Programa | bitcount | bitcount | qsort | qsort |
+| CPI      | 0.92     | 2.72     | 0.58  | 2.50  |
+
 ### Análise e Conclusões
 A partir dos dados obtidos acima fizemos as seguintes conclusões:
 - A arquitetura do processador não influi na taxa de acerto a memória
