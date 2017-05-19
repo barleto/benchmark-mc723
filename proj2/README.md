@@ -16,12 +16,10 @@
   - Branch predictor
   - Cache (Sendo essa testada a partir do Dinero IV)
 
-<br>
-##### Pipelines usados como referência:
+##### Pipelines usados como referência
 
 ![pipelines](https://www.ecse.rpi.edu/frisc/finalreports/spring95/Image7.gif)
 
-<br>
 ## **Relatório**
 
 ### Ferramentas
