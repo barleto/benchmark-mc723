@@ -69,7 +69,7 @@ Os atributos usados para montar as configurações de arquitetura foram:
 	- *Tamanho*: **5** e **9**
 	- *Fowarding*: **com** e **sem**
 	- *Concorrência*: **escalar** e **superescalar**
-	- *Branch Predictor*: **Always not taken* e **1 bit**
+	- *Branch Predictor*: **Always not taken** e **1 bit**
 * <b>Cache</b>
 	- Quantidade de *traces* a executar: fixo em 20
 	- Veja a tabela a seguir
