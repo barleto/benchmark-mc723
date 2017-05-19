@@ -5,30 +5,19 @@
 - Vitor Marge Eichenberger 	- **149053**
 - Guilherme Zanelato		- **119494**
 
-## TODO:
-Esta seção serve somente para o grupo se orientar e **deverá ser apagada** antes da submissão final do projeto.
-
-- [ ] Escolher configurações das simulações
-- [x] Atualizar arquivos das simulações
-	- [x] Arquivos de trace
-	- [x] Arquivo do mips **.cpp**
-- [ ] Compilar tudo
-- [ ] Rodar testes
-- [ ] Redigir relatório
 
 ## Roteiro *(resumido)*
 - Será utilizado o software Dinero IV para o teste de software em várias configurações de cache distintas.
-- A implementação do Simulador MIPS em archC, também será modificada para ser possível contabilziar hazard em diferentes implementaçes (Tamanho do pipeline: 5, 7 e 13 estágios, processador escalar VS superescalar, etc)
+- A implementação do Simulador MIPS em archC, também será modificada para ser possível contabilziar hazard em diferentes implementaçes (Tamanho do pipeline: 5 e 9 estágios, processador escalar VS superescalar, etc)
 - Sero testados:
-  - Tamanho do pipeline: 5, 7 e 13 estágios
+  - Tamanho do pipeline: 5 e 9 estágios
   - Processador escalar vs superescalar
   - Hazard de dados e controle
   - Branch predictor
   - Cache (Sendo essa testada a partir do Dinero IV)
 
-## **Relatório**
 
-### Introdução
+## **Relatório**
 
 ### Ferramentas
 - DineroIV
@@ -38,7 +27,15 @@ Esta seção serve somente para o grupo se orientar e **deverá ser apagada** an
 ### Metodologia
 Primeiramente foram baixadas, instaladas e configuradas todas as ferramentas necessárias ao projeto.
 
-Em seguida foi feita uma revisão sobre processadores, pipelines e suas características, focando em relembrar os conceitos para garantir coerência e validade ao projeto, seus dados e resultados.
+Em seguida foi feita uma revisão sobre processadores, pipelines e suas características, focando em relembrar os conceitos para garantir coerência e validade ao projeto, seus dados e resultados. Dentre muitos pontos que vimos nesta etapa, consideramos importante destacar algumas informações sobre **_Hazards_**
+
+##### **Hazards**
+Tipos de hazards e suas ocorrências:
+* RAW - ocorre independente do processador ser escalar ou superescalar
+* WAR - não ocorre em nenhum caso estudado
+* WAW - ocorre apenas quando há concorrência, ou seja, somente nos processadores superescalares
+
+fonte: Wikipédia - seção sobre hazards ( https://en.wikipedia.org/wiki/Hazard_(computer_architecture) )
 
 Adaptação do código fonte do mips (do simulador) que não possui muitas funcionalidades desejadas para as análises:
 - Pipeline, com diferentes tamanhos
