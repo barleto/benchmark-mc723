@@ -25,18 +25,20 @@
 - Simulador de MIPS (em ArchC)
 
 ### Metodologia
+##### Início e Parte Teórica
 Primeiramente foram baixadas, instaladas e configuradas todas as ferramentas necessárias ao projeto.
 
 Em seguida foi feita uma revisão sobre processadores, pipelines e suas características, focando em relembrar os conceitos para garantir coerência e validade ao projeto, seus dados e resultados. Dentre muitos pontos que vimos nesta etapa, consideramos importante destacar algumas informações sobre **_Hazards_**
 
-##### **Hazards**
+##### Observações sobre **_Hazards_**
 Tipos de hazards e suas ocorrências:
-* RAW - ocorre independente do processador ser escalar ou superescalar
-* WAR - não ocorre em nenhum caso estudado
-* WAW - ocorre apenas quando há concorrência, ou seja, somente nos processadores superescalares
+* <b>RAW</b> - ocorre independente do processador ser escalar ou superescalar
+* <b>WAR</b> - não ocorre em nenhum caso estudado
+* <b>WAW</b> - ocorre apenas quando há concorrência, ou seja, somente nos processadores superescalares
 
 fonte: Wikipédia - seção sobre hazards ( https://en.wikipedia.org/wiki/Hazard_(computer_architecture) )
 
+##### Parte Prática
 Adaptação do código fonte do mips (do simulador) que não possui muitas funcionalidades desejadas para as análises:
 - Pipeline, com diferentes tamanhos
 - Branch Predictor
@@ -95,7 +97,7 @@ Por fim usaremos as seguintes configurações:
 |      C9c     | Superescalar |    SIM    |       1 bit      |
 
 **OBS:** Todas as configurações acima serão testadas com todas as configurções de cache.
-Ex: C5a será rodada para cada um das 4 configurações de cache.
+Ex: C5a será rodada para cada um das 2 configurações de cache, resultando nas configurações C5a1 e C5a2 respecivamente.
 
 ### Resultados
 
