@@ -122,6 +122,8 @@ Medidas obtidas indiretamente:
 - `CPI = Ciclos / Instruções`
 - `tempo aprox = ciclos + (L1Miss x 10) + (L2Miss x 600)`
 
+A seguir algumas tabelas com os resultados apenas dos melhores e piores para cada programa.
+
 ##### Ordenado por tempo de execução aproximado
 
 | Config      | C5c2     | C9a1     | C5c2     | C9a1     |
