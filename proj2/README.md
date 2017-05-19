@@ -5,6 +5,7 @@
 - Vitor Marge Eichenberger 	- **149053**
 - Guilherme Zanelato		- **119494**
 
+Link para apresentação: [Clique Aqui](https://docs.google.com/presentation/d/1_Q6eZMrHkgLgolFS9ZSB9k_CY57Flvg8wzlQ7WicGgw/edit?usp=sharing)
 
 ## Roteiro *(resumido)*
 - Será utilizado o software Dinero IV para o teste de software em várias configurações de cache distintas.
