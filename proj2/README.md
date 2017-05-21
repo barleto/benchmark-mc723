@@ -51,6 +51,8 @@ Adaptação do código fonte do mips (do simulador) que não possui muitas funci
 
 Além é claro de todas as implementações necessárias para gerarem estatísticas e registros dos eventos a serem analisados.
 
+Este código se encontra na pasta raiz deste projeto: **mips_isa.cpp** para visualização mais fácil. Há outra cópia do código que é usado pelo simulador na pasta do simulador: mips-2.4.0
+
 As configurações foram feitas por código (através da biblioteca em **C** *configMIPS.h*) com a parte mais interna, relacionada majoritáriamente ao pipeline, e pelo DineroIV (através de seus parâmetros de execução) relativa à memória/cache. Dispondo-se assim das seguintes configurações:
 * configMIPS.h
 	- Nome do *trace* a ser executado
