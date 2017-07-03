@@ -106,11 +106,11 @@ void ac_behavior(end)
 }
 ```
 
-### Avaliação de ciclos e CPI médio
+## Avaliação de ciclos e CPI médio
 
 Com o simulador compilado, é hora de fazer os benchmarks.
 
-## Benchmark 1: Susan Corners
+### Benchmark 1: Susan Corners
 
 Executando o algoritmo 3 vezes, um para cada entrada diferente, temos o seguinte output:
 ```
@@ -183,7 +183,7 @@ ArchC: Simulation statistics
 O melhor(maior) CPI foi 4.2, o CPI da segunda execução, mesmo essa execução tendo o maior número de instruções em relação à terceira execução.
 É possível notar que o CPI e o número de ciclos muda, dependendo da entrada, como era de se esperar.
 
-## Benchmark 2: SHA com input pequeno
+### Benchmark 2: SHA com input pequeno
 
 Executando SHA, obtive a seguinte saída:
 ```
