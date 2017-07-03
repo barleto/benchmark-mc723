@@ -106,7 +106,7 @@ void ac_behavior(end)
 }
 ```
 
-## Avaliação de ciclos e CPI médio
+## Avaliação de ciclos e CPI
 
 Com o simulador compilado, é hora de fazer os benchmarks.
 
