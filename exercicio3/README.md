@@ -101,8 +101,8 @@ void ac_behavior(end)
   dbg_printf("@@@ end behavior @@@\n");
   printf("[EXERCICIO 3] A instrução ADD, ADDI e ADDU foram executadas %d vez(es).\n", addCounter);
   printf("[EXERCICIO 3] Ciclos: %.0f\n", cycleCounter);
-	printf("[EXERCICIO 3] Instrucoes: %d\n", instructionCounter);
-	printf("[EXERCICIO 3] CPI: %.1f\n", cycleCounter/instructionCounter);
+  printf("[EXERCICIO 3] Instrucoes: %d\n", instructionCounter);
+  printf("[EXERCICIO 3] CPI: %.1f\n", cycleCounter/instructionCounter);
 }
 ```
 
