@@ -1,6 +1,6 @@
 #include<stdio.h>
 
 int main(){
-  printf("FUNCIONAA!!!!!!!!!\n");
+  printf("Hello MC723\n");
   return 0;
 }

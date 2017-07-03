@@ -1,0 +1,19 @@
+SystemC 2.3.1-Accellera --- Feb 16 2017 14:37:46
+        Copyright (c) 1996-2014 by all Contributors,
+        ALL RIGHTS RESERVED
+ArchC: Reading ELF application file: sha
+
+ArchC: -------------------- Starting Simulation --------------------
+
+
+ArchC: -------------------- Simulation Finished --------------------
+[EXERCICIO 3] A instrução ADD, ADDI e ADDU foram executadas 4980324 vez(es).
+[EXERCICIO 3] Ciclos: 33398936
+[EXERCICIO 3] Instrucoes: 13175638
+[EXERCICIO 3] CPI: 2.5
+
+Info: /OSCI/SystemC: Simulation stopped by user.
+ArchC: Simulation statistics
+    Times: 0.25 user, 0.00 system, 0.26 real
+    Number of instructions executed: 13175979
+    Simulation speed: 52703.92 K instr/s
