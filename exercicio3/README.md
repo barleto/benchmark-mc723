@@ -180,7 +180,7 @@ ArchC: Simulation statistics
     Simulation speed: 45723.20 K instr/s
 
 ```
-O melhor(maior) CPI foi 4.2, o CPI da segunda execução, mesmo essa execução tendo o maior número de instruções em relação à terceira execução.
+O melhor(menor) CPI foi 2.3, o CPI da primeira execução, mesmo essa execução tendo o maior número de instruções entre todas as execuções.
 É possível notar que o CPI e o número de ciclos muda, dependendo da entrada, como era de se esperar.
 
 ### Benchmark 2: SHA com input pequeno
@@ -207,7 +207,6 @@ ArchC: Simulation statistics
     Number of instructions executed: 13175979
     Simulation speed: 52703.92 K instr/s
 ```
-Esse CPI é o mais baixo que obtive até o momento.
 
 ### Benchmark 3: SHA com input grande
 
@@ -233,7 +232,7 @@ ArchC: Simulation statistics
     Number of instructions executed: 137088791
     Simulation speed: 50215.67 K instr/s
 ```
-Em comparação com o SHA de input pequeno, o CPI com input grande piorou(diminuiu). Vale notar tmabém que o número de instruções e ciclos aumentou em relação ao teste com SHA de input pequeno, como era esperado.
+Em comparação com o SHA de input pequeno, o CPI com input grande melhoru(diminuiu). Vale notar tmabém que o número de instruções e ciclos aumentou em relação ao teste com SHA de input pequeno, como era esperado. Mesmo assim, seu CPI diminuiu.
 
 ## Conclusão
-Dentre todos os testes, o algoritmo que obteve maior CPI foi o algoritmo de **susan corners**. Apesar disso, não é possível afirmar que esse algoritmo tem o melhor desempenho em todos os casos, já que seu CPI muda considerávelmente dependendo da entrada. E esse comportamento se repete para o outro algoritmo testado o **SHA**, quando observado o CPI para entradas grandes e pequenas.
+Dentre todos os testes, o algoritmo que obteve menor CPI foi o algoritmo **SHA**. Apesar disso, não é possível afirmar que esse algoritmo tem o melhor desempenho em todos os casos, já que seu CPI muda dependendo da entrada. E esse comportamento se repete para o outro algoritmo testado o **susan corners**, pois seu CPI muda consideravelmente dependendo da entrada.
